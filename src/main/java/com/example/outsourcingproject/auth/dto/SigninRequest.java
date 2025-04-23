@@ -10,14 +10,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignupRequest {
-
+public class SigninRequest {
 	@Email
 	@NotBlank
 	private String email;
 	@NotBlank
-	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{4,}$")
+	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9])$")
 	private String password;
-	@NotBlank
-	private String userRole;
 }

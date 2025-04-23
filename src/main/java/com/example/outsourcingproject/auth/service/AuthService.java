@@ -1,13 +1,19 @@
 package com.example.outsourcingproject.auth.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.outsourcingproject.auth.dto.SigninRequest;
+import com.example.outsourcingproject.auth.dto.SigninResponse;
 import com.example.outsourcingproject.auth.dto.SignupRequest;
 import com.example.outsourcingproject.auth.dto.SignupResponse;
-import com.example.outsourcingproject.common.JwtUtill;
+import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.user.entity.User;
 import com.example.outsourcingproject.user.enums.UserRole;
 import com.example.outsourcingproject.user.repository.UserRepository;
@@ -20,7 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepository userRepository;
-	private final JwtUtill jwtUtill;
+	private final JwtUtil jwtUtil;
+	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
 	public SignupResponse signup(@Valid SignupRequest request) {
 		if (userRepository.existsByEmail(request.getEmail())) {
@@ -36,9 +43,26 @@ public class AuthService {
 			.userRole(userRole)
 			.build();
 		User savedUser = userRepository.save(user);
-		String token = jwtUtill.createToken(savedUser.getId(), savedUser.getEmail(), savedUser.getUserRole());
+		String bearertoken = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail(), savedUser.getUserRole());
+		String token = jwtUtil.subStringToken(bearertoken);
 
 		return SignupResponse.builder().token(token).build();
 	}
 
+	@Transactional
+	public SigninResponse login(@Valid SigninRequest request) {
+		User user = userRepository.findByEmail(request.getEmail())
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+		}
+
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+			user.getEmail(), user.getPassword());
+		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+		String token = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
+		return new SigninResponse(token);
+	}
 }

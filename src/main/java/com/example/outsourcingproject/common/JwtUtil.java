@@ -19,7 +19,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class JwtUtill {
+public class JwtUtil {
 
 	private static final String prefix = "Bearer ";
 	private static final long tokenLife = 24 * 60 * 60 * 1000L;
