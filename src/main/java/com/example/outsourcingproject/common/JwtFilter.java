@@ -40,7 +40,7 @@ public class JwtFilter implements Filter {
 		HttpServletResponse httpServletResponse = (HttpServletResponse)response;
 		String uri = httpServletRequest.getRequestURI();
 
-		if (uri.startsWith("/api/users")) {
+		if (uri.startsWith("/api/auth")) {
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
 			return;
 		}

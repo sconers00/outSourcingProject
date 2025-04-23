@@ -15,6 +15,6 @@ public class SigninRequest {
 	@NotBlank
 	private String email;
 	@NotBlank
-	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9])$")
+	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{4,}$")
 	private String password;
 }

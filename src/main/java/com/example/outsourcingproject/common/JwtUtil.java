@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.common;
 
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtUtil {
@@ -62,8 +65,14 @@ public class JwtUtil {
 			.getBody();
 	}
 
-	public long getIdFromToken(String token) {
-		Claims claims = getClaims(token);
+	public long getIdFromRequest(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		String token = Arrays.stream(cookies)
+			.filter(c -> c.getName().equals("token"))
+			.map(Cookie::getValue)
+			.findFirst()
+			.orElseThrow();
+		Claims claims = getClaims(subStringToken(token));
 		return Long.parseLong(claims.getSubject());
 	}
 }

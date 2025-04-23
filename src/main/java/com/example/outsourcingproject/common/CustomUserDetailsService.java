@@ -21,12 +21,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		System.out.println("2");
 		return userRepository.findByEmail(email)
 			.map(this::createUserDetails)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 
 	private UserDetails createUserDetails(User user) {
+		System.out.println("2");
 		return AuthUser.builder()
 			.id(user.getId())
 			.username(user.getEmail())

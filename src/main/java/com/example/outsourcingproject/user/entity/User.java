@@ -26,8 +26,9 @@ import lombok.NoArgsConstructor;
 public class User extends BaseEntity {
 
 	@Id
+	@Column(name = "user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long userId;
 
 	@NotEmpty
 	@Column(unique = true)
@@ -42,6 +43,7 @@ public class User extends BaseEntity {
 
 	@NotNull
 	@ColumnDefault("false")
+	@Column(name = "is_deleted")
 	private boolean isDeleted;
 
 	@Builder
@@ -49,5 +51,9 @@ public class User extends BaseEntity {
 		this.email = email;
 		this.password = password;
 		this.userRole = userRole;
+	}
+
+	public void deleteAccount(boolean delete) {
+		this.isDeleted = true;
 	}
 }

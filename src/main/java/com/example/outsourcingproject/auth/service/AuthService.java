@@ -3,7 +3,6 @@ package com.example.outsourcingproject.auth.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,6 @@ public class AuthService {
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
 	public SignupResponse signup(@Valid SignupRequest request) {
-		System.out.println("test");
 		if (userRepository.existsByEmail(request.getEmail())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
@@ -55,15 +53,18 @@ public class AuthService {
 		User user = userRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+		if (user.isDeleted()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}
 		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 		}
-
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 			user.getEmail(), user.getPassword());
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+		//Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
 		String token = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
-		return new SigninResponse(token);
+
+		return new SigninResponse(jwtUtil.subStringToken(token));
 	}
 }
