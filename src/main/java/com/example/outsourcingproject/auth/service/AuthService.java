@@ -30,6 +30,7 @@ public class AuthService {
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
 	public SignupResponse signup(@Valid SignupRequest request) {
+		System.out.println("test");
 		if (userRepository.existsByEmail(request.getEmail())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}

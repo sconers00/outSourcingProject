@@ -33,7 +33,7 @@ public class JwtFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws
 		IOException,
 		ServletException {
 		HttpServletRequest httpServletRequest = (HttpServletRequest)request;
@@ -41,9 +41,15 @@ public class JwtFilter implements Filter {
 		String uri = httpServletRequest.getRequestURI();
 
 		if (uri.startsWith("/api/users")) {
-			chain.doFilter(httpServletRequest, httpServletResponse);
+			filterChain.doFilter(httpServletRequest, httpServletResponse);
 			return;
 		}
+		
+		if (uri.startsWith("/error")) {
+			filterChain.doFilter(httpServletRequest, httpServletResponse);
+			return;
+		}
+
 		String jwt = getTokenFromCookie(httpServletRequest);
 		if (jwt == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -61,7 +67,7 @@ public class JwtFilter implements Filter {
 		httpServletRequest.setAttribute("email", claims.get("email"));
 		httpServletRequest.setAttribute("userRole", claims.get("userRole"));
 
-		chain.doFilter(httpServletRequest, httpServletResponse);
+		filterChain.doFilter(httpServletRequest, httpServletResponse);
 	}
 
 	public String getTokenFromCookie(HttpServletRequest request) {
