@@ -44,8 +44,13 @@ public class JwtFilter implements Filter {
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
 			return;
 		}
-		
+
 		if (uri.startsWith("/error")) {
+			filterChain.doFilter(httpServletRequest, httpServletResponse);
+			return;
+		}
+
+		if (uri.startsWith("/")) {
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
 			return;
 		}
