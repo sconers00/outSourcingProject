@@ -62,4 +62,8 @@ public class JwtUtil {
 			.getBody();
 	}
 
+	public long getIdFromToken(String token) {
+		Claims claims = getClaims(token);
+		return Long.parseLong(claims.getSubject());
+	}
 }
