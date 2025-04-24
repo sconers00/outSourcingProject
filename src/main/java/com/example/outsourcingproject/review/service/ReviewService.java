@@ -7,22 +7,35 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.outsourcingproject.menu.entity.Menu;
+import com.example.outsourcingproject.menu.exception.NotFoundException;
+import com.example.outsourcingproject.menu.repository.MenuRepository;
+import com.example.outsourcingproject.menu.service.MenuService;
+import com.example.outsourcingproject.order.entity.Orders;
+import com.example.outsourcingproject.order.enums.OrderStatus;
+import com.example.outsourcingproject.order.repository.OrderRepository;
+import com.example.outsourcingproject.order.service.OrderService;
 import com.example.outsourcingproject.review.dto.ReviewRequestDto;
 import com.example.outsourcingproject.review.dto.ReviewResponseDto;
 import com.example.outsourcingproject.review.entity.Review;
 import com.example.outsourcingproject.review.repository.ReviewRepository;
+import com.example.outsourcingproject.store.entity.Store;
+import com.example.outsourcingproject.store.repository.StoreRepository;
+import com.example.outsourcingproject.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
 
 	private final ReviewRepository reviewRepository;
+	private final UserRepository userRepository;
+	private final MenuRepository menuRepository;
+	private final OrderRepository orderRepository;
+	private final StoreRepository storeRepository;
 
-	// 실제 구현체는 DI로 주입되어야 함
-	private final OrderService orderService;
-	private final MenuService menuService;
 
 	@Transactional
 	public ReviewResponseDto createReview(Long orderId, ReviewRequestDto reviewRequestDto, Long userId) {
@@ -30,13 +43,13 @@ public class ReviewService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 리뷰가 작성된 주문입니다.");
 		}
 
-		OrderDto orderDto = orderService.findOrderById(orderId);
+		Orders order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-		if (!orderDto.getUserId().equals(userId)) {
+		if (order.getUser().getUserId().equals(userId)) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "자신의 주문에 대해서만 리뷰를 작성할 수 있습니다.");
 		}
 
-		if (!orderDto.isDeliveryCompleted()) {
+		if (!OrderStatus.ARRIVED.equals(order.getOrderStatus())){
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "배달이 완료된 주문에 대해서만 리뷰를 작성할 수 있습니다.");
 		}
 
@@ -44,20 +57,23 @@ public class ReviewService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "별점은 1점에서 5점 사이여야 합니다.");
 		}
 
-		String menuName = menuService.getMenuNameById(orderDto.getMenuId());
+		Menu menu = menuRepository.findById(reviewRequestDto.getMenuId()).orElseThrow(() ->
+			new NotFoundException(HttpStatus.NOT_FOUND, "메뉴 ID가 잘못되었거나 없는 메뉴입니다."));
+
+		Store store = storeRepository.findByIdOrElseThrow(reviewRequestDto.getStoreId());
 
 		Review review = Review.builder()
 			.orderId(orderId)
 			.userId(userId)
-			.menuId(orderDto.getMenuId())
-			.storeId(orderDto.getStoreId())
+			.menuId(menu.getMenuId())
+			.storeId(store.getId())
 			.rating(reviewRequestDto.getRating())
 			.content(reviewRequestDto.getContent())
 			.build();
 
 		Review savedReview = reviewRepository.save(review);
 
-		return ReviewResponseDto.from(savedReview, menuName);
+		return ReviewResponseDto.from(savedReview, menu.getMenuName());
 	}
 
 	@Transactional(readOnly = true)
@@ -76,25 +92,9 @@ public class ReviewService {
 		Page<Review> reviews = reviewRepository.findByStoreIdAndRatingBetweenOrderByCreatedAtDesc(storeId, min, max, pageable);
 
 		return reviews.map(review -> {
-			String menuName = menuService.getMenuNameById(review.getMenuId());
-			return ReviewResponseDto.from(review, menuName);
+			Menu menu = menuRepository.findById(review.getMenuId()).orElseThrow(() ->
+				new NotFoundException(HttpStatus.NOT_FOUND, "메뉴 ID가 잘못되었거나 없는 메뉴입니다."));
+			return ReviewResponseDto.from(review, menu.getMenuName());
 		});
-	}
-
-	// =================== 내부 인터페이스 정의 ===================
-
-	public interface OrderService {
-		OrderDto findOrderById(Long orderId);
-	}
-
-	public interface OrderDto {
-		Long getUserId();
-		Long getMenuId();
-		Long getStoreId();
-		boolean isDeliveryCompleted();
-	}
-
-	public interface MenuService {
-		String getMenuNameById(Long menuId);
 	}
 }
