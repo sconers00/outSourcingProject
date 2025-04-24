@@ -42,7 +42,7 @@ public class AuthService {
 			.userRole(userRole)
 			.build();
 		User savedUser = userRepository.save(user);
-		String bearertoken = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail(), savedUser.getUserRole());
+		String bearertoken = jwtUtil.createToken(savedUser.getUserId(), savedUser.getEmail(), savedUser.getUserRole());
 		String token = jwtUtil.subStringToken(bearertoken);
 
 		return SignupResponse.builder().token(token).build();
@@ -63,7 +63,7 @@ public class AuthService {
 			user.getEmail(), user.getPassword());
 		//Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-		String token = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
+		String token = jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getUserRole());
 
 		return new SigninResponse(jwtUtil.subStringToken(token));
 	}
