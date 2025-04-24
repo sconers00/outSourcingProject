@@ -6,8 +6,6 @@ import java.util.Optional;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,8 +13,7 @@ import com.example.outsourcingproject.order.entity.Orders;
 import com.example.outsourcingproject.user.entity.User;
 
 public interface OrderRepository extends JpaRepository<Orders, Long> {
-	@Query("SELECT o FROM Orders o where o.user = :user")
-	Optional<List<Orders>> findAllByUser(@Param("user") User user);
+	Optional<List<Orders>> findAllByUser(User user);
 
 	default PageImpl<Orders> findAllByUserOrElseThrow(User user, PageRequest pageRequest) {
 		List<Orders> foundedList = findAllByUser(user).orElseThrow(
