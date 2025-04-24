@@ -27,7 +27,7 @@ public class OrderController {
 			.body(orderService.createOrder(dto, request));
 	}
 
-	@PatchMapping("/{orderID}")
+	@PatchMapping("/{orderId}")
 	public ResponseEntity<OrderResponse> cancelOrder(HttpServletRequest request, @PathVariable Long orderID) {
 		return ResponseEntity.ok()
 			.body(orderService.cancelOrder(request, orderID));
