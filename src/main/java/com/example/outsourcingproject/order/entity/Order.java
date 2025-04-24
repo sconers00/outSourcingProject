@@ -62,4 +62,8 @@ public class Order extends BaseEntity {
 		this.address = address;
 		this.orderStatus = orderStatus;
 	}
+
+	public void chageStatus(String orderStatus) {
+		this.orderStatus = OrderStatus.of(orderStatus);
+	}
 }

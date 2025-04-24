@@ -3,7 +3,7 @@ package com.example.outsourcingproject.order.enums;
 import java.util.Arrays;
 
 public enum OrderStatus {
-	PENDING, PREPARING, ON_DELIVERY, ARRIVED;
+	PENDING, PREPARING, ON_DELIVERY, ARRIVED, CANCELED;
 
 	public static OrderStatus of(String orderStatus) {
 		return Arrays.stream(OrderStatus.values())

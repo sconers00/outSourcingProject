@@ -2,6 +2,7 @@ package com.example.outsourcingproject.order.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.outsourcingproject.common.JwtUtil;
@@ -44,5 +45,21 @@ public class OrderService {
 		Order savedOrder = orderRepository.save(order);
 
 		return new OrderResponse(savedOrder);
+	}
+
+	@Transactional
+	public OrderResponse cancelOrder(HttpServletRequest request, Long orderID) {
+		Long userId = jwtUtil.getIdFromRequest(request);
+		User userFounded = userRepository.findById(userId).orElseThrow();
+
+		Order order = orderRepository.findById(orderID)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		if (!order.getUser().equals(userFounded)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+		}
+
+		order.chageStatus("CANCELED");
+
+		return new OrderResponse(order);
 	}
 }
