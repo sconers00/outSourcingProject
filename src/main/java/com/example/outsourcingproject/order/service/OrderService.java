@@ -10,6 +10,7 @@ import com.example.outsourcingproject.order.dto.OrderRequestDto;
 import com.example.outsourcingproject.order.dto.OrderResponse;
 import com.example.outsourcingproject.order.entity.Order;
 import com.example.outsourcingproject.order.enums.OrderStatus;
+import com.example.outsourcingproject.order.repository.OrderRepository;
 import com.example.outsourcingproject.store.repository.StoreRepository;
 import com.example.outsourcingproject.user.entity.User;
 import com.example.outsourcingproject.user.repository.UserRepository;
@@ -25,6 +26,7 @@ public class OrderService {
 	private final StoreRepository storeRepository;
 	private final UserRepository userRepository;
 	private final MenuRepository menuRepository;
+	private final OrderRepository orderRepository;
 
 	public OrderResponse createOrder(OrderRequestDto dto, HttpServletRequest request) {
 		Long userId = jwtUtil.getIdFromRequest(request);
@@ -39,8 +41,8 @@ public class OrderService {
 			.orderStatus(OrderStatus.PENDING)
 			.build();
 
-		return OrderResponse.builder()
-			.orderId(order.getOrderId())
-			.build();
+		Order savedOrder = orderRepository.save(order);
+
+		return new OrderResponse(savedOrder);
 	}
 }

@@ -2,6 +2,8 @@ package com.example.outsourcingproject.order.dto;
 
 import java.time.LocalDateTime;
 
+import com.example.outsourcingproject.order.entity.Order;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,5 +29,15 @@ public class OrderResponse {
 		this.address = address;
 		this.orderStatus = orderStatus;
 		this.orderedAt = orderedAt;
+	}
+
+	public OrderResponse(Order order) {
+		this.orderId = order.getOrderId();
+		this.storeId = 1L;
+		this.menuId = order.getMenu().getMenuId();
+		this.quantity = order.getQuantity();
+		this.address = order.getAddress();
+		this.orderStatus = order.getOrderStatus().toString();
+		this.orderedAt = order.getCreatedAt();
 	}
 }
