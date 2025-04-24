@@ -2,6 +2,7 @@ package com.example.outsourcingproject.order.entity;
 
 import com.example.outsourcingproject.common.BaseEntity;
 import com.example.outsourcingproject.menu.entity.Menu;
+import com.example.outsourcingproject.order.enums.OrderStatus;
 import com.example.outsourcingproject.store.entity.Store;
 import com.example.outsourcingproject.user.entity.User;
 
@@ -14,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,10 +30,12 @@ public class Order extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long orderId;
 
-	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
+
+	@NotBlank
+	private OrderStatus orderStatus;
 
 	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -44,8 +48,18 @@ public class Order extends BaseEntity {
 	private Store store;
 
 	@NotBlank
-	private Long amount;
+	private Long quantity;
 
 	@NotBlank
 	private String address;
+
+	@Builder
+	public Order(User user, Menu menu, Store store, Long quantity, String address, OrderStatus orderStatus) {
+		this.user = user;
+		this.menu = menu;
+		this.store = store;
+		this.quantity = quantity;
+		this.address = address;
+		this.orderStatus = orderStatus;
+	}
 }
