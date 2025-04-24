@@ -21,6 +21,10 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final UserService userService;
 
+	//유저를 찾으시려면
+	//컨트롤러에서는 파라미터로 HttpServletRequest를 받아 서비스에 그대로 넘겨주세요
+	//서비스에서 해당 객체를 이용해 유저 id를 추출할 수 있습니다.
+	//UserService에 관련 설명이 있습니다.
 	@PatchMapping
 	public ResponseEntity<String> deleteAccount(HttpServletRequest request) {
 		userService.deleteAccount(request);

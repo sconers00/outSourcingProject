@@ -27,6 +27,11 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final OrderRepository orderRepository;
 
+	// 유저 id를 HttpServletRequest에서 바로 추출할 수 있습니다.
+	// 위의 JwtUtil 의존성을 추가해주시고
+	// 메서드 안에서 jwtUtill.getIdFromRequest()에 받은 HttpServletRequest 를 넘겨주시면
+	// long 타입으로 유저 id를 반환합니다.
+	// 해당 id를 이용해 UserRepository에서 유저를 찾으시면 됩니다.
 	@Transactional
 	public void deleteAccount(HttpServletRequest request) {
 		long usersId = jwtUtil.getIdFromRequest(request);

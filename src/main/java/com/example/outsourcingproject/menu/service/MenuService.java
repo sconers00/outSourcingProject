@@ -1,18 +1,8 @@
 package com.example.outsourcingproject.menu.service;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.example.outsourcingproject.menu.dto.MenuDeleteResponseDto;
-import com.example.outsourcingproject.menu.dto.MenuRequestDto;
-import com.example.outsourcingproject.menu.dto.MenuResponseDto;
-import com.example.outsourcingproject.menu.dto.MenuUpdateRequestDto;
-import com.example.outsourcingproject.menu.entity.Menu;
-import com.example.outsourcingproject.menu.exception.NotFoundException;
 import com.example.outsourcingproject.menu.repository.MenuRepository;
-import com.example.outsourcingproject.store.entity.Store;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MenuService {
 	private final MenuRepository menuRepository;
-
+	/*
 	@Transactional
 	public MenuResponseDto save(MenuRequestDto menuRequest, Store store) {
 		Menu menu = Menu.builder()
@@ -70,4 +60,6 @@ public class MenuService {
 		MenuDeleteResponseDto result = new MenuDeleteResponseDto("메뉴가 삭제되었습니다.", menuId);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
+
+	 */
 }
