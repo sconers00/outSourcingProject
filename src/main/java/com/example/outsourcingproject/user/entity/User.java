@@ -15,13 +15,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "user_table")
+@Table(name = "user")
 @NoArgsConstructor
 public class User extends BaseEntity {
 
@@ -42,13 +43,18 @@ public class User extends BaseEntity {
 	private UserRole userRole;
 
 	@NotNull
+	@Pattern(regexp = "^(?=.*[0-9]).{9,11}$")
+	private String userTel;
+
+	@NotNull
 	@ColumnDefault("false")
 	@Column(name = "is_deleted")
 	private boolean isDeleted;
 
 	@Builder
-	public User(String email, String password, UserRole userRole) {
+	public User(String email, String password, UserRole userRole, String userTel) {
 		this.email = email;
+		this.userTel = userTel;
 		this.password = password;
 		this.userRole = userRole;
 	}

@@ -60,7 +60,12 @@ public class JwtFilter implements Filter {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 
-		String token = jwtUtil.subStringToken(jwt);
+		Cookie[] cookies = httpServletRequest.getCookies();
+		String token = Arrays.stream(cookies)
+			.filter(c -> c.getName().equals("token"))
+			.map(Cookie::getValue)
+			.findFirst()
+			.orElseThrow();
 		Claims claims = jwtUtil.getClaims(token);
 		if (claims == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
