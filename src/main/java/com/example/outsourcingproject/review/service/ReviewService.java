@@ -45,7 +45,7 @@ public class ReviewService {
 
 		Orders order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-		if (order.getUser().getUserId().equals(userId)) {
+		if (!order.getUser().getUserId().equals(userId)) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "자신의 주문에 대해서만 리뷰를 작성할 수 있습니다.");
 		}
 
