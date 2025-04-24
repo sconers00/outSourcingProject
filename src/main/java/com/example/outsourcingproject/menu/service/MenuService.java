@@ -1,5 +1,8 @@
 package com.example.outsourcingproject.menu.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,10 +37,10 @@ public class MenuService {
 			throw new MismatchException(HttpStatus.FORBIDDEN, "본인 소유의 점포에만 매뉴를 추가할 수 있습니다.");
 		}
 		Menu menu = Menu.builder()
-			.storeId(store.getStoreId())
+			.storeId(store)
 			.menuName(menuRequest.getMenuName())
 			.menuPrice(menuRequest.getMenuPrice())
-			.menuDiscription(menuRequest.getDiscription())
+			.discription(menuRequest.getDiscription())
 			.build();
 
 		menuRepository.save(menu);
@@ -62,7 +65,7 @@ public class MenuService {
 
 		Menu menu = menuRepository.findById(menuId).orElseThrow(() ->
 			new NotFoundException(HttpStatus.NOT_FOUND, "메뉴 ID가 잘못되었거나 없는 메뉴입니다."));
-		if (!store.getStoreId().equals(menu.getStoreId())) {
+		if (!store.getId().equals(menu.getStoreId())) {
 			throw new NotFoundException(HttpStatus.BAD_REQUEST, "가게 ID와 메뉴 소유 점포 ID가 일치하지 않습니다.");
 		}
 
@@ -86,7 +89,7 @@ public class MenuService {
 
 		Menu menu = menuRepository.findById(menuId).orElseThrow(() ->
 			new NotFoundException(HttpStatus.NOT_FOUND, "메뉴 ID가 잘못되었거나 없는 메뉴입니다."));
-		if (!store.getStoreId().equals(menu.getStoreId())) {
+		if (!store.getId().equals(menu.getStoreId())) {
 			throw new NotFoundException(HttpStatus.BAD_REQUEST, "가게 ID와 메뉴 소유 점포 ID가 일치하지 않습니다.");
 		}
 		menu.deltetMenu("삭제된 메뉴입니다.", 999999L, true);
@@ -95,7 +98,7 @@ public class MenuService {
 	}
 
 	public boolean userChecker(HttpServletRequest request, Store store) {//점포 소유자 본인인지 확인
-		boolean check = (jwtUtil.getIdFromRequest(request) != store.getStoreId());
+		boolean check = (jwtUtil.getIdFromRequest(request) != store.getId());
 		return check;
 	}
 
@@ -105,4 +108,9 @@ public class MenuService {
 		return store;
 	}
 
+	public List<MenuResponseDto> findByStoreId(Long storeId) {
+		Long store = getStoreId(storeId).getId();
+		List<Menu> menuList = menuRepository.findByStoreId(store);
+		return menuList.stream().map(MenuResponseDto::toDto).collect(Collectors.toList());
+	}
 }
