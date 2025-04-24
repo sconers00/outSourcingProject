@@ -28,13 +28,18 @@ public class StoreRequestDto {
 	@Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "시간 형식은 HH:mm 형식이어야 합니다. (예: 09:00)")
 	private final String closeTime;
 
+	@NotBlank(message = "최소 주문 금액은 필수입니다")
+	private final int minOrderPrice;
+
 	@Builder
-	public StoreRequestDto(String storeName, String address, String storeTelNumber, String openTime, String closeTime) {
+	public StoreRequestDto(String storeName, String address, String storeTelNumber, String openTime, String closeTime,
+		int minOrderPrice) {
 		this.storeName = storeName;
 		this.address = address;
 		this.storeTelNumber = storeTelNumber;
 		this.openTime = openTime;
 		this.closeTime = closeTime;
+		this.minOrderPrice = minOrderPrice;
 	}
 
 	public Store toEntity() {
@@ -44,6 +49,7 @@ public class StoreRequestDto {
 			.storeTelNumber(storeTelNumber)
 			.openTime(openTime)
 			.closeTime(closeTime)
+			.minOrderPrice(minOrderPrice)
 			.build();
 
 	}
