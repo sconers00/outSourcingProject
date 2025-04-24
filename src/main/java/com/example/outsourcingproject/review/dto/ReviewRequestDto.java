@@ -14,4 +14,8 @@ public class ReviewRequestDto {
 	private int rating;
 
 	private String content;
+
+	private Long menuId;
+
+	private Long storeId;
 }

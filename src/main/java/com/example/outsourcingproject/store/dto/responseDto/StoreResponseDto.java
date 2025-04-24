@@ -20,15 +20,18 @@ public class StoreResponseDto {
 
 	private final String closeTime;
 
+	private final int minOrderPrice;
+
 	@Builder
 	public StoreResponseDto(Long id, String storeName, String address, String storeTelNumber, String openTime,
-		String closeTime) {
+		String closeTime, int minOrderPrice) {
 		this.id = id;
 		this.storeName = storeName;
 		this.address = address;
 		this.storeTelNumber = storeTelNumber;
 		this.openTime = openTime;
 		this.closeTime = closeTime;
+		this.minOrderPrice = minOrderPrice;
 	}
 
 	public static StoreResponseDto from(Store store) {
@@ -39,6 +42,7 @@ public class StoreResponseDto {
 			.storeTelNumber(store.getStoreTelNumber())
 			.openTime(store.getOpenTime())
 			.closeTime(store.getCloseTime())
+			.minOrderPrice(store.getMinOrderPrice())
 			.build();
 	}
 }

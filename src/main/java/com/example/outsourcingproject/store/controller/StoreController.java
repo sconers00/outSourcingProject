@@ -16,21 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.service.StoreService;
+import com.example.outsourcingproject.user.repository.UserRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/stores")
+@RequestMapping("/api/users/{userId}/stores")
 @RequiredArgsConstructor
 public class StoreController {
 
 	private final StoreService storeService;
 
 	@PostMapping
-	public ResponseEntity<StoreResponseDto> registerStore(@RequestBody @Valid StoreRequestDto storeRequestDto) {
+	public ResponseEntity<StoreResponseDto> registerStore(@PathVariable Long userId,
+		@RequestBody @Valid StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
-		StoreResponseDto storeResponseDto = storeService.registerStore(storeRequestDto);
+		StoreResponseDto storeResponseDto = storeService.registerStore(userId, storeRequestDto, request);
 
 		return new ResponseEntity<>(storeResponseDto, HttpStatus.CREATED);
 	}
