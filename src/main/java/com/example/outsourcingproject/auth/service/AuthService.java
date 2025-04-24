@@ -40,6 +40,7 @@ public class AuthService {
 			.email(request.getEmail())
 			.password(encodedPassword)
 			.userRole(userRole)
+			.userTel(request.getUserTel())
 			.build();
 		User savedUser = userRepository.save(user);
 		String bearertoken = jwtUtil.createToken(savedUser.getUserId(), savedUser.getEmail(), savedUser.getUserRole());

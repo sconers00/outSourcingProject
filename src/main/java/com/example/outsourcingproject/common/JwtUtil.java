@@ -72,7 +72,7 @@ public class JwtUtil {
 			.map(Cookie::getValue)
 			.findFirst()
 			.orElseThrow();
-		Claims claims = getClaims(subStringToken(token));
+		Claims claims = getClaims(token);
 		return Long.parseLong(claims.getSubject());
 	}
 }

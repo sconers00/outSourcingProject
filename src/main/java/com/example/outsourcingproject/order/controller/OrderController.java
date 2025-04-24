@@ -28,8 +28,8 @@ public class OrderController {
 	}
 
 	@PatchMapping("/{orderId}")
-	public ResponseEntity<OrderResponse> cancelOrder(HttpServletRequest request, @PathVariable Long orderID) {
+	public ResponseEntity<OrderResponse> cancelOrder(HttpServletRequest request, @PathVariable Long orderId) {
 		return ResponseEntity.ok()
-			.body(orderService.cancelOrder(request, orderID));
+			.body(orderService.cancelOrder(request, orderId));
 	}
 }

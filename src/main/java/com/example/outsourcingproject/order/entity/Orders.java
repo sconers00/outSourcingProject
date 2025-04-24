@@ -1,5 +1,8 @@
 package com.example.outsourcingproject.order.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.example.outsourcingproject.common.BaseEntity;
 import com.example.outsourcingproject.menu.entity.Menu;
 import com.example.outsourcingproject.order.enums.OrderStatus;
@@ -15,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,9 +26,9 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Table(name = "order")
+@Table(name = "orders")
 @NoArgsConstructor
-public class Order extends BaseEntity {
+public class Orders extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,29 +36,31 @@ public class Order extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private User user;
 
-	@NotBlank
 	private OrderStatus orderStatus;
 
 	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "menu_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Menu menu;
 
 	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "store_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Store store;
 
-	@NotBlank
+	@NotNull
 	private Long quantity;
 
 	@NotBlank
 	private String address;
 
 	@Builder
-	public Order(User user, Menu menu, Store store, Long quantity, String address, OrderStatus orderStatus) {
+	public Orders(User user, Menu menu, Store store, Long quantity, String address, OrderStatus orderStatus) {
 		this.user = user;
 		this.menu = menu;
 		this.store = store;

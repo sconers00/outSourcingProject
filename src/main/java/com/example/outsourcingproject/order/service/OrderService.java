@@ -9,7 +9,7 @@ import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.menu.repository.MenuRepository;
 import com.example.outsourcingproject.order.dto.OrderRequestDto;
 import com.example.outsourcingproject.order.dto.OrderResponse;
-import com.example.outsourcingproject.order.entity.Order;
+import com.example.outsourcingproject.order.entity.Orders;
 import com.example.outsourcingproject.order.enums.OrderStatus;
 import com.example.outsourcingproject.order.repository.OrderRepository;
 import com.example.outsourcingproject.store.repository.StoreRepository;
@@ -32,7 +32,8 @@ public class OrderService {
 	public OrderResponse createOrder(OrderRequestDto dto, HttpServletRequest request) {
 		Long userId = jwtUtil.getIdFromRequest(request);
 		User userFounded = userRepository.findById(userId).orElseThrow();
-		Order order = Order.builder()
+		Orders orders = Orders.builder()
+			.user(userFounded)
 			.store(storeRepository.findById(dto.getStoreId())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 			.menu(menuRepository.findById(dto.getMenuId())
@@ -42,9 +43,9 @@ public class OrderService {
 			.orderStatus(OrderStatus.PENDING)
 			.build();
 
-		Order savedOrder = orderRepository.save(order);
+		Orders savedOrders = orderRepository.save(orders);
 
-		return new OrderResponse(savedOrder);
+		return new OrderResponse(savedOrders);
 	}
 
 	@Transactional
@@ -52,14 +53,19 @@ public class OrderService {
 		Long userId = jwtUtil.getIdFromRequest(request);
 		User userFounded = userRepository.findById(userId).orElseThrow();
 
-		Order order = orderRepository.findById(orderID)
+		Orders orders = orderRepository.findById(orderID)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		if (!order.getUser().equals(userFounded)) {
+		if (!orders.getUser().equals(userFounded)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 		}
 
-		order.chageStatus("CANCELED");
+		orders.chageStatus("CANCELED");
 
-		return new OrderResponse(order);
+		return new OrderResponse(orders);
+	}
+
+	public OrderResponse findOrderById(Long orderId) {
+		return new OrderResponse(
+			orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
 	}
 }
