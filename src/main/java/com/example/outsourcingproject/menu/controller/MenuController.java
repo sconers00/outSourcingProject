@@ -53,6 +53,6 @@ public class MenuController {
 
 	@DeleteMapping("/menus/{menuId}")//메뉴 삭제-soft
 	public void deleteMenu(@PathVariable Long storeId, @PathVariable Long menuId, HttpServletRequest request) {
-		menuService.delete(storeId, menuId, request);
+		menuService.delete(getStoreId(storeId), menuId, request);
 	}
 }
