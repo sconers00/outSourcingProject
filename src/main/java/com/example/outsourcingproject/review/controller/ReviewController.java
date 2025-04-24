@@ -59,3 +59,14 @@ public class ReviewController {
 		return 1L; // TODO: 실제 구현체로 교체 필요
 	}
 }
+
+
+
+/*
+지금 dev에 커밋한거는 임의로 유저id 1로 고정해서 받게해둔상태
+나중에 고쳐야함
+
+유저 id 받는 방법 userController 랑, userService에 주석이랑 같이해서
+기입
+
+ */
