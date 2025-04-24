@@ -15,6 +15,7 @@ import com.example.outsourcingproject.menu.exception.MismatchException;
 import com.example.outsourcingproject.menu.exception.NotFoundException;
 import com.example.outsourcingproject.menu.repository.MenuRepository;
 import com.example.outsourcingproject.store.entity.Store;
+import com.example.outsourcingproject.store.repository.StoreRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MenuService {
 	private final MenuRepository menuRepository;
+	private final StoreRepository storeRepository;
 	private final JwtUtil jwtUtil;
 
 	@Transactional
-	public MenuResponseDto save(MenuRequestDto menuRequest, Store store, HttpServletRequest request) {//메뉴 생성기
+	public MenuResponseDto save(MenuRequestDto menuRequest, Long storeId, HttpServletRequest request) {//메뉴 생성기
+		Store store = getStoreId(storeId);
 		if (userChecker(request, store)) {
 			throw new MismatchException(HttpStatus.FORBIDDEN, "본인 소유의 점포에만 매뉴를 추가할 수 있습니다.");
 		}
@@ -49,8 +52,9 @@ public class MenuService {
 	}
 
 	@Transactional
-	public MenuResponseDto updateMenu(MenuUpdateRequestDto request, Store store, Long menuId,
+	public MenuResponseDto updateMenu(MenuUpdateRequestDto request, Long storeId, Long menuId,
 		HttpServletRequest ServletRequest) {//메뉴 수정기
+		Store store = getStoreId(storeId);
 
 		if (userChecker(ServletRequest, store)) {
 			throw new MismatchException(HttpStatus.FORBIDDEN, "본인 소유 점포의 매뉴만 수정할 수 있습니다.");
@@ -73,8 +77,9 @@ public class MenuService {
 	}
 
 	@Transactional
-	public ResponseEntity<MenuDeleteResponseDto> delete(Store store, Long menuId, HttpServletRequest request) {
+	public ResponseEntity<MenuDeleteResponseDto> delete(Long storeId, Long menuId, HttpServletRequest request) {
 		//메뉴 삭제기, softDelete
+		Store store = getStoreId(storeId);
 		if (userChecker(request, store)) {
 			throw new MismatchException(HttpStatus.FORBIDDEN, "본인 소유 점포의 매뉴만 삭제할 수 있습니다.");
 		}
@@ -93,4 +98,11 @@ public class MenuService {
 		boolean check = (jwtUtil.getIdFromRequest(request) != store.getStoreId());
 		return check;
 	}
+
+	public Store getStoreId(Long storeId) {//가게 id 추출기
+		Store store = storeRepository.findById(storeId).orElseThrow(() ->
+			new NotFoundException(HttpStatus.NOT_FOUND, "가게 ID가 잘못되었거나 없는 가게입니다."));
+		return store;
+	}
+
 }
