@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MenuRequestDto {
+public class MenuUpdateRequestDto {
 	@NotBlank
 	private String menuName;
 
