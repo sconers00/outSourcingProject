@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.outsourcingproject.menu.dto.MenuRequestDto;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
 import com.example.outsourcingproject.menu.dto.MenuUpdateRequestDto;
-import com.example.outsourcingproject.menu.exception.NotFoundException;
 import com.example.outsourcingproject.menu.service.MenuService;
-import com.example.outsourcingproject.store.entity.Store;
 import com.example.outsourcingproject.store.repository.StoreRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -28,28 +27,24 @@ public class MenuController {
 	private final MenuService menuService;
 	private final StoreRepository storeRepository;
 
-	public Store getStoreId(Long storeId) {
-		Store store = storeRepository.findById(storeId).orElseThrow(() ->
-			new NotFoundException(HttpStatus.NOT_FOUND, "가게 ID가 잘못되었거나 없는 가게입니다."));
-		return store;
-	}
-
-	@PostMapping("/menus")
+	@PostMapping("/menus")//메뉴추가
 	public ResponseEntity<MenuResponseDto> addMenu(@PathVariable Long storeId,
-		@Valid @RequestBody MenuRequestDto menuRequest) {
-		MenuResponseDto menuResponseDto = menuService.save(menuRequest, getStoreId(storeId));
+		@Valid @RequestBody MenuRequestDto menuRequest, HttpServletRequest request) {
+		MenuResponseDto menuResponseDto = menuService.save(menuRequest, storeId, request);
 		return new ResponseEntity<>(menuResponseDto, HttpStatus.CREATED);
 	}
 
-	@PatchMapping("/menus/{menuId}")
+	@PatchMapping("/menus/{menuId}")//메뉴수정
 	public ResponseEntity<MenuResponseDto> updateMenu(@PathVariable Long storeId,
-		@PathVariable Long menuId, @Valid @RequestBody MenuUpdateRequestDto menuUpdateRequest) {
-		MenuResponseDto menuResponseDto = menuService.updateMenu(menuUpdateRequest, getStoreId(storeId), menuId);
+		@PathVariable Long menuId, @Valid @RequestBody MenuUpdateRequestDto menuUpdateRequest,
+		HttpServletRequest request) {
+		MenuResponseDto menuResponseDto = menuService.updateMenu(menuUpdateRequest, storeId, menuId,
+			request);
 		return new ResponseEntity<>(menuResponseDto, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/menus/{menuId}")
-	public void deleteMenu(@PathVariable Long storeId, @PathVariable Long menuId) {
-		menuService.delete(storeId, menuId);
+	@DeleteMapping("/menus/{menuId}")//메뉴 삭제-soft
+	public void deleteMenu(@PathVariable Long storeId, @PathVariable Long menuId, HttpServletRequest request) {
+		menuService.delete(storeId, menuId, request);
 	}
 }
