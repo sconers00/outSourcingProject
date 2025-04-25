@@ -2,13 +2,12 @@ package com.example.outsourcingproject.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class SigninRequest {
 	@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,7}$")
 	@NotBlank
@@ -16,4 +15,10 @@ public class SigninRequest {
 	@NotBlank
 	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{4,}$")
 	private String password;
+
+	@Builder
+	public SigninRequest(String email, String password) {
+		this.email = email;
+		this.password = password;
+	}
 }
