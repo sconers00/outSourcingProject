@@ -21,6 +21,6 @@ public class SignupRequest {
 	@NotBlank
 	private String userRole;
 	@NotNull
-	@Pattern(regexp = "^(?=.*[0-9]).{9,11}$")
+	@Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
 	private String userTel;
 }
