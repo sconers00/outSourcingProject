@@ -38,7 +38,7 @@ public class StoreService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-		if(user.getUserRole().equals(UserRole.OWNER)) {
+		if(!user.getUserRole().equals(UserRole.OWNER)) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사장님만이 가게를 등록할 수 있습니다.");
 	}
 
