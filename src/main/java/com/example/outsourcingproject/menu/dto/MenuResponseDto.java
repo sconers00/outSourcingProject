@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class MenuResponseDto {
-	private Long menuId;
 	private String menuName;
 	private Long menuPrice;
 	@Builder.Default
