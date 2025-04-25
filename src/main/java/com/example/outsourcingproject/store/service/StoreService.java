@@ -9,8 +9,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
-import com.example.outsourcingproject.menu.entity.Menu;
-import com.example.outsourcingproject.menu.repository.MenuRepository;
 import com.example.outsourcingproject.menu.service.MenuService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
@@ -35,9 +33,11 @@ public class StoreService {
 	private final JwtUtil jwtUtil;
 
 	@Transactional
-	public StoreResponseDto registerStore(Long userId, StoreRequestDto storeRequestDto, HttpServletRequest request) {
+	public StoreResponseDto registerStore(StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
-		User user = userRepository.findById(userId)
+		long usersId = jwtUtil.getIdFromRequest(request);
+
+		User user = userRepository.findById(usersId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
 		Long storeCount = storeRepository.countStoresByUser(user);
@@ -76,7 +76,13 @@ public class StoreService {
 	@Transactional
 	public StoreResponseDto updateById(Long id, StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
+		long usersId = jwtUtil.getIdFromRequest(request);
+
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
+
+		if(!findStore.getUser().getUserId().equals(usersId)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "수정 권한이 없습니다.");
+		}
 
 		findStore.updateStore(storeRequestDto);
 
@@ -103,18 +109,18 @@ public class StoreService {
 	}
 
 	@Transactional
-	public void delete(Long userId, Long id) {
+	public void delete(Long id ,HttpServletRequest request) {
 
-		// 유저 일치 예외처리 만들기
+		long usersId = jwtUtil.getIdFromRequest(request);
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
-		if(!findStore.getUser().getUserId().equals(userId)) {
+		if(!findStore.getUser().getUserId().equals(usersId)) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다.");
 		}
 
 		findStore.deleteStore();
 
-
+		storeRepository.delete(findStore);
 	}
 }
