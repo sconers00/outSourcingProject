@@ -33,22 +33,22 @@ public class StoreService {
 	private final JwtUtil jwtUtil;
 
 	@Transactional
-	public StoreResponseDto registerStore(Long userId, StoreRequestDto storeRequestDto,  HttpServletRequest request) {
+	public StoreResponseDto registerStore(Long userId, StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-		if(!user.getUserRole().equals(UserRole.OWNER)) {
+		if (!user.getUserRole().equals(UserRole.OWNER)) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사장님만이 가게를 등록할 수 있습니다.");
-	}
+		}
 
-		if(storeRepository.findByStoreName(storeRequestDto.getStoreName()).isPresent()) {
+		if (storeRepository.findByStoreName(storeRequestDto.getStoreName()).isPresent()) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 이름입니다.");
 		}
 
-		 if(storeRepository.findByStoreTelNumber(storeRequestDto.getStoreTelNumber()).isPresent()) {
-			 throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 전화번호입니다.");
-		 }
+		if (storeRepository.findByStoreTelNumber(storeRequestDto.getStoreTelNumber()).isPresent()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 전화번호입니다.");
+		}
 
 		Store store = storeRequestDto.toEntity();
 
@@ -71,7 +71,7 @@ public class StoreService {
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
-		List<Menu> menuList = menuRepository.findByStoreId(findStore.getId());
+		List<Menu> menuList = menuRepository.findByStoreId(findStore, 200L);
 
 		List<MenuResponseDto> menuResponseList = menuList.stream()
 			.map(MenuResponseDto::toDto)
