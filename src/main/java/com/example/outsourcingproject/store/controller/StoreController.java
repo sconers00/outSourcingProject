@@ -11,12 +11,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.outsourcingproject.order.dto.ChangeOrderState;
+import com.example.outsourcingproject.order.dto.OrderResponse;
+import com.example.outsourcingproject.order.service.OrderService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.service.StoreService;
-import com.example.outsourcingproject.user.repository.UserRepository;
+import com.example.outsourcingproject.user.dto.SearchOrderResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class StoreController {
 
 	private final StoreService storeService;
+	private final OrderService orderService;
 
 	@PostMapping("/users/{userId}/stores")
 	public ResponseEntity<StoreResponseDto> registerStore(@PathVariable Long userId,
@@ -73,4 +78,24 @@ public class StoreController {
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
+	//주문 관련 메서드
+	@PatchMapping("{storeId}/orders/{orderId}")
+	public ResponseEntity<OrderResponse> changeOrderState(@PathVariable Long orderId, @PathVariable Long storeId,
+		HttpServletRequest request,
+		@RequestBody ChangeOrderState changeOrderState) {
+		return ResponseEntity.ok()
+			.body(orderService.changeOrderState(request, changeOrderState.getOrderState(), orderId, storeId));
+	}
+
+	@GetMapping("{storeId}/orders")
+	public ResponseEntity<List<SearchOrderResponse>> searchdOrder(HttpServletRequest request,
+		@PathVariable Long storeId,
+		@RequestParam(value = "status", defaultValue = "All", required = false) String status,
+		@RequestParam(value = "index", defaultValue = "1", required = false) int index) {
+		List<SearchOrderResponse> list = orderService.findOrderByStore(request, storeId, status, index);
+		return ResponseEntity.ok()
+			.body(list);
+	}
+
 }

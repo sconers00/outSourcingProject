@@ -32,6 +32,7 @@ public class User extends BaseEntity {
 	private Long userId;
 
 	@NotEmpty
+	@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,7}$")
 	@Column(unique = true)
 	private String email;
 
@@ -43,7 +44,7 @@ public class User extends BaseEntity {
 	private UserRole userRole;
 
 	@NotNull
-	@Pattern(regexp = "^(?=.*[0-9]).{9,11}$")
+	@Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
 	private String userTel;
 
 	@NotNull
