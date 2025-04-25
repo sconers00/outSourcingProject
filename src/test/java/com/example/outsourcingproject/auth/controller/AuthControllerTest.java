@@ -35,16 +35,17 @@ class AuthControllerTest {
 	private MockMvc mockMvc;
 
 	@MockitoBean
-	AuthService authService;
+	private AuthService authService;
 	@MockitoBean
-	JwtUtil jwtUtil;
+	private JwtUtil jwtUtil;
 	@MockitoBean
-	JpaMetamodelMappingContext jpaMetamodelMappingContext;
+	private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 	@MockitoBean
-	HttpServletRequest httpServletRequest;
+	private HttpServletRequest httpServletRequest;
 
 	@Test
 	void signup() throws Exception {
+		//given
 		SignupRequest signupRequest = SignupRequest.builder()
 			.email("test@mail.com")
 			.password("aaa111!!!")
@@ -53,7 +54,7 @@ class AuthControllerTest {
 			.build();
 		SignupResponse signupResponse = SignupResponse.builder().token("someToken").build();
 		given(authService.signup(any(SignupRequest.class))).willReturn(signupResponse);
-
+		//when & then
 		mockMvc.perform(post("/api/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(signupRequest)))
@@ -64,13 +65,14 @@ class AuthControllerTest {
 
 	@Test
 	void login() throws Exception {
+		//given
 		SigninRequest signinRequest = SigninRequest.builder()
 			.email("test@mail.com")
 			.password("aaa111!!!")
 			.build();
 		SigninResponse signinResponse = SigninResponse.builder().token("someToken").build();
 		given(authService.login(any(SigninRequest.class))).willReturn(signinResponse);
-
+		//when & then
 		mockMvc.perform(post("/api/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(signinRequest)))
@@ -81,9 +83,10 @@ class AuthControllerTest {
 
 	@Test
 	void logout() throws Exception {
+		//given
 		Cookie[] cookies = {new Cookie("token", "testToken")};
 		given(httpServletRequest.getCookies()).willReturn(cookies);
-
+		//when & then
 		mockMvc.perform(delete("/api/auth/logout")
 				.cookie(new Cookie("token", "testToken"))
 				.contentType(MediaType.APPLICATION_JSON)
@@ -94,13 +97,13 @@ class AuthControllerTest {
 
 	@Nested
 	class logout {
-
 		@Test
 		@DisplayName("정상적인 토큰")
-		void logout() throws Exception {
+		void goodToken() throws Exception {
+			//given
 			Cookie[] cookies = {new Cookie("token", "testToken")};
 			given(httpServletRequest.getCookies()).willReturn(cookies);
-
+			//when & then
 			mockMvc.perform(delete("/api/auth/logout")
 					.cookie(new Cookie("token", "testToken"))
 					.contentType(MediaType.APPLICATION_JSON)
@@ -112,9 +115,11 @@ class AuthControllerTest {
 		@Test
 		@DisplayName("빈 토큰")
 		void badToken() throws Exception {
+			//given & when & then
 			mockMvc.perform(delete("/api/auth/logout"))
 				.andExpect(status().isNotFound())
 				.andDo(print());
 		}
 	}
+
 }
