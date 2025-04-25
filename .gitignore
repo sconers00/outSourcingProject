@@ -4,3 +4,5 @@ dist/
 *.log
 .gradle/
 gradle/
+# 예시: src/main/resources 경로 안에 있을 경우
+src/main/resources/application.properties
