@@ -76,7 +76,7 @@ public class OrderService {
 			if (!orders.getStore().equals(store)) {
 				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 			}
-			if (!store.getUserId().equals(userFounded)) {
+			if (!store.getUser().equals(userFounded)) {
 				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 			}
 		}
@@ -90,7 +90,7 @@ public class OrderService {
 		Long userId = jwtUtil.getIdFromRequest(request);
 		Store store = storeRepository.findById(storeId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		if (!store.getUserId().equals(userId)) {
+		if (!store.getUser().equals(userId)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 		}
 

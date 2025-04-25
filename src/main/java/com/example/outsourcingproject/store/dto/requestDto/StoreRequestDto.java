@@ -33,7 +33,6 @@ public class StoreRequestDto {
 	@NotNull(message = "최소 주문 금액은 필수입니다")
 	private final Long minOrderPrice;
 
-	@Builder
 	public StoreRequestDto(String storeName, String address, String storeTelNumber, String openTime, String closeTime,
 		Long minOrderPrice) {
 		this.storeName = storeName;
@@ -44,16 +43,5 @@ public class StoreRequestDto {
 		this.minOrderPrice = minOrderPrice;
 	}
 
-	public Store toEntity(User user) {
-		return Store.builder()
-			.userId(user)
-			.storeName(storeName)
-			.address(address)
-			.storeTelNumber(storeTelNumber)
-			.openTime(openTime)
-			.closeTime(closeTime)
-			.minOrderPrice(minOrderPrice)
-			.build();
-
-	}
+  
 }

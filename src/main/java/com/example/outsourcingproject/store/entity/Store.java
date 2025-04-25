@@ -46,20 +46,20 @@ public class Store extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
-	private User userId;
+	private User user;
 
 	private boolean isDeleted = false;
 
 	@Builder
 	public Store(String storeName, String address, String storeTelNumber, String openTime, String closeTime,
-		Long minOrderPrice, User userId) {
+		Long minOrderPrice, User user) {
 		this.storeName = storeName;
 		this.address = address;
 		this.storeTelNumber = storeTelNumber;
 		this.openTime = openTime;
 		this.closeTime = closeTime;
 		this.minOrderPrice = minOrderPrice;
-		this.userId = userId;
+		this.user = user;
 	}
 
 	public void updateStore(StoreRequestDto storeRequestDto) {
@@ -70,8 +70,7 @@ public class Store extends BaseEntity {
 		this.closeTime = storeRequestDto.getCloseTime();
 	}
 
-	public void deleteStore(String storeName, boolean isDeleted) {
-		this.storeName = storeName;
-		this.isDeleted = isDeleted;
+	public void deleteStore() {
+		this.isDeleted = true;
 	}
 }
