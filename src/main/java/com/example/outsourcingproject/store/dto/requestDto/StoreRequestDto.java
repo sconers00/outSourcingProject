@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.store.dto.requestDto;
 
 import com.example.outsourcingproject.store.entity.Store;
+import com.example.outsourcingproject.user.entity.User;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,8 +44,9 @@ public class StoreRequestDto {
 		this.minOrderPrice = minOrderPrice;
 	}
 
-	public Store toEntity() {
+	public Store toEntity(User user) {
 		return Store.builder()
+			.userId(user)
 			.storeName(storeName)
 			.address(address)
 			.storeTelNumber(storeTelNumber)

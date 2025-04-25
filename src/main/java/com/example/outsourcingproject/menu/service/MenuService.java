@@ -101,10 +101,7 @@ public class MenuService {
 	}
 
 	public boolean userChecker(HttpServletRequest request, Store store) {//점포 소유자 본인인지 확인
-		// boolean check = !(jwtUtil.getIdFromRequest(request) == store.getUserId().getUserId());
-		// 현제 UserId가 null이라 고장
-		boolean check = false;
-		return check;
+		return !(jwtUtil.getIdFromRequest(request) == store.getUserId().getUserId());
 	}
 
 	public Store getStoreId(Long storeId) {//가게 id 추출기
