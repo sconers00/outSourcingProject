@@ -42,7 +42,7 @@ public class Store extends BaseEntity {
 	private String closeTime;
 
 	@Column(nullable = false)
-	private int minOrderPrice;
+	private Long minOrderPrice;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -52,7 +52,7 @@ public class Store extends BaseEntity {
 
 	@Builder
 	public Store(String storeName, String address, String storeTelNumber, String openTime, String closeTime,
-		int minOrderPrice, User userId) {
+		Long minOrderPrice, User userId) {
 		this.storeName = storeName;
 		this.address = address;
 		this.storeTelNumber = storeTelNumber;

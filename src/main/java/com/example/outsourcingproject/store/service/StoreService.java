@@ -11,6 +11,7 @@ import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
 import com.example.outsourcingproject.menu.entity.Menu;
 import com.example.outsourcingproject.menu.repository.MenuRepository;
+import com.example.outsourcingproject.menu.service.MenuService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.entity.Store;
@@ -27,9 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StoreService {
 
+	private final MenuService menuService;
 	private final UserRepository userRepository;
 	private final StoreRepository storeRepository;
-	private final MenuRepository menuRepository;
 	private final JwtUtil jwtUtil;
 
 	@Transactional
@@ -71,13 +72,9 @@ public class StoreService {
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
-		List<Menu> menuList = menuRepository.findByStoreId(findStore, 200L);
+		List<MenuResponseDto> menuList = menuService.findByStoreId(findStore.getId());
 
-		List<MenuResponseDto> menuResponseList = menuList.stream()
-			.map(MenuResponseDto::toDto)
-			.collect(Collectors.toList());
-
-		return StoreResponseDto.fromMenu(findStore, menuResponseList);
+		return StoreResponseDto.fromMenu(findStore, menuList);
 	}
 
 	public List<StoreResponseDto> findAll() {
