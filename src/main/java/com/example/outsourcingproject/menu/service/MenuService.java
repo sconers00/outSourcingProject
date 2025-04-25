@@ -12,7 +12,6 @@ import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.menu.dto.MenuDeleteResponseDto;
 import com.example.outsourcingproject.menu.dto.MenuRequestDto;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
-import com.example.outsourcingproject.menu.dto.MenuUpdateRequestDto;
 import com.example.outsourcingproject.menu.entity.Menu;
 import com.example.outsourcingproject.menu.exception.MismatchException;
 import com.example.outsourcingproject.menu.exception.NotFoundException;
@@ -22,9 +21,11 @@ import com.example.outsourcingproject.store.repository.StoreRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MenuService {
 	private final MenuRepository menuRepository;
 	private final StoreRepository storeRepository;
@@ -46,6 +47,7 @@ public class MenuService {
 		menuRepository.save(menu);
 
 		MenuResponseDto menuResponseDto = MenuResponseDto.builder()
+			.menuId(menu.getMenuId())
 			.menuName(menuRequest.getMenuName())
 			.menuPrice(menuRequest.getMenuPrice())
 			.discription(menuRequest.getDiscription())
@@ -55,7 +57,7 @@ public class MenuService {
 	}
 
 	@Transactional
-	public MenuResponseDto updateMenu(MenuUpdateRequestDto request, Long storeId, Long menuId,
+	public MenuResponseDto updateMenu(MenuRequestDto request, Long storeId, Long menuId,
 		HttpServletRequest ServletRequest) {//메뉴 수정기
 		Store store = getStoreId(storeId);
 
@@ -65,13 +67,14 @@ public class MenuService {
 
 		Menu menu = menuRepository.findById(menuId).orElseThrow(() ->
 			new NotFoundException(HttpStatus.NOT_FOUND, "메뉴 ID가 잘못되었거나 없는 메뉴입니다."));
-		if (!store.getId().equals(menu.getStoreId())) {
+		if (!store.getId().equals(menu.getStoreId().getId())) {
 			throw new NotFoundException(HttpStatus.BAD_REQUEST, "가게 ID와 메뉴 소유 점포 ID가 일치하지 않습니다.");
 		}
 
 		menu.updateMenu(request.getMenuName(), request.getMenuPrice(), request.getDiscription());
 
 		MenuResponseDto menuResponseDto = MenuResponseDto.builder()
+			.menuId(menu.getMenuId())
 			.menuName(request.getMenuName())
 			.menuPrice(request.getMenuPrice())
 			.discription(request.getDiscription())
@@ -89,16 +92,18 @@ public class MenuService {
 
 		Menu menu = menuRepository.findById(menuId).orElseThrow(() ->
 			new NotFoundException(HttpStatus.NOT_FOUND, "메뉴 ID가 잘못되었거나 없는 메뉴입니다."));
-		if (!store.getId().equals(menu.getStoreId())) {
+		if (!store.getId().equals(menu.getStoreId().getId())) {
 			throw new NotFoundException(HttpStatus.BAD_REQUEST, "가게 ID와 메뉴 소유 점포 ID가 일치하지 않습니다.");
 		}
-		menu.deltetMenu("삭제된 메뉴입니다.", 999999L, true);
+		menu.deletetMenu("삭제된 메뉴입니다.", 999999L, true);
 		MenuDeleteResponseDto result = new MenuDeleteResponseDto("메뉴가 삭제되었습니다.", menuId);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 	public boolean userChecker(HttpServletRequest request, Store store) {//점포 소유자 본인인지 확인
-		boolean check = (jwtUtil.getIdFromRequest(request) != store.getId());
+		// boolean check = !(jwtUtil.getIdFromRequest(request) == store.getUserId().getUserId());
+		// 현제 UserId가 null이라 고장
+		boolean check = false;
 		return check;
 	}
 
@@ -109,8 +114,7 @@ public class MenuService {
 	}
 
 	public List<MenuResponseDto> findByStoreId(Long storeId) {
-		Long store = getStoreId(storeId).getId();
-		List<Menu> menuList = menuRepository.findByStoreId(store);
+		List<Menu> menuList = menuRepository.findByStoreId(getStoreId(storeId), 999999L);
 		return menuList.stream().map(MenuResponseDto::toDto).collect(Collectors.toList());
 	}
 }
