@@ -23,13 +23,13 @@ public class StoreResponseDto {
 
 	private final String closeTime;
 
-	private final int minOrderPrice;
+	private final Long minOrderPrice;
 
 	private final List<MenuResponseDto> menuList;
 
 	@Builder
 	public StoreResponseDto(Long id, String storeName, String address, String storeTelNumber, String openTime,
-		String closeTime, int minOrderPrice, List<MenuResponseDto> menuList) {
+		String closeTime, Long minOrderPrice, List<MenuResponseDto> menuList) {
 		this.id = id;
 		this.storeName = storeName;
 		this.address = address;
