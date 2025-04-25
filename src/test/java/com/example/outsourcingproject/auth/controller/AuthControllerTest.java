@@ -96,7 +96,7 @@ class AuthControllerTest {
 	}
 
 	@Nested
-	class logout {
+	class Logout {
 		@Test
 		@DisplayName("정상적인 토큰")
 		void goodToken() throws Exception {

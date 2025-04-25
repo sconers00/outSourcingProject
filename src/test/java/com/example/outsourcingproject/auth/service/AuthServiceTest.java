@@ -38,7 +38,7 @@ class AuthServiceTest {
 	private AuthService authService;
 
 	@Nested
-	class signup {
+	class Signup {
 		@Test
 		void goodRequest() {
 			//given
@@ -73,7 +73,7 @@ class AuthServiceTest {
 	}
 
 	@Nested
-	class login {
+	class Login {
 		@Test
 		void successfulLogin() {
 			//given
@@ -114,6 +114,20 @@ class AuthServiceTest {
 				() -> authService.login(request));
 			//then
 			assertEquals("400 BAD_REQUEST \"삭제된 유저입니다.\"", responseStatusException.getMessage());
+		}
+
+		@Test
+		void wrongPassword() {
+			//given
+			User user = new User();
+			given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
+			given(passwordEncoder.matches(any(), any())).willReturn(false);
+			SigninRequest request = new SigninRequest();
+			//when
+			ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class,
+				() -> authService.login(request));
+			//then
+			assertEquals("401 UNAUTHORIZED \"잘못된 비밀번호입니다.\"", responseStatusException.getMessage());
 		}
 	}
 }

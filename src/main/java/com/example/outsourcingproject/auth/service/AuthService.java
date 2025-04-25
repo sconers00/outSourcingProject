@@ -55,7 +55,7 @@ public class AuthService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제된 유저입니다.");
 		}
 		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
 		}
 
 		String token = jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getUserRole());

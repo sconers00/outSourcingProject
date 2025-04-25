@@ -9,8 +9,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
-import com.example.outsourcingproject.menu.entity.Menu;
-import com.example.outsourcingproject.menu.repository.MenuRepository;
 import com.example.outsourcingproject.menu.service.MenuService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
@@ -51,7 +49,15 @@ public class StoreService {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 전화번호입니다.");
 		}
 
-		Store store = storeRequestDto.toEntity();
+		Store store = Store.builder()
+			.address(storeRequestDto.getAddress())
+			.closeTime(storeRequestDto.getCloseTime())
+			.minOrderPrice(storeRequestDto.getMinOrderPrice())
+			.openTime(storeRequestDto.getOpenTime())
+			.storeName(storeRequestDto.getStoreName())
+			.user(user)
+			.storeTelNumber(storeRequestDto.getStoreTelNumber())
+			.build();
 
 		Store savedStore = storeRepository.save(store);
 
@@ -91,7 +97,7 @@ public class StoreService {
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
-		findStore.deleteStore(findStore.getStoreName(), true);
+		findStore.deleteStore();
 
 		storeRepository.delete(findStore);
 	}

@@ -40,7 +40,6 @@ public class JwtFilter implements Filter {
 		HttpServletResponse httpServletResponse = (HttpServletResponse)response;
 		String uri = httpServletRequest.getRequestURI();
 
-		System.out.println("is it filtering?");
 		if (uri.startsWith("/api/auth")) {
 			filterChain.doFilter(httpServletRequest, httpServletResponse);
 			return;
@@ -86,7 +85,7 @@ public class JwtFilter implements Filter {
 		if (cookie == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-
+		
 		return Arrays.stream(cookie)
 			.map(Cookie::getValue)
 			.findFirst()
