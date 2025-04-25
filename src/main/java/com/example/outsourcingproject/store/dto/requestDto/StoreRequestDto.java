@@ -30,11 +30,11 @@ public class StoreRequestDto {
 	private final String closeTime;
 
 	@NotNull(message = "최소 주문 금액은 필수입니다")
-	private final int minOrderPrice;
+	private final Long minOrderPrice;
 
 	@Builder
 	public StoreRequestDto(String storeName, String address, String storeTelNumber, String openTime, String closeTime,
-		int minOrderPrice) {
+		Long minOrderPrice) {
 		this.storeName = storeName;
 		this.address = address;
 		this.storeTelNumber = storeTelNumber;
