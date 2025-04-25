@@ -38,6 +38,9 @@ public class OrderService {
 	public OrderResponse createOrder(OrderRequestDto dto, HttpServletRequest request) {
 		Long userId = jwtUtil.getIdFromRequest(request);
 		User userFounded = userRepository.findById(userId).orElseThrow();
+		if (!userFounded.getUserRole().equals(UserRole.CUSTOMER)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+		}
 		Orders orders = Orders.builder()
 			.user(userFounded)
 			.store(storeRepository.findById(dto.getStoreId())
@@ -99,7 +102,7 @@ public class OrderService {
 				.map(SearchOrderResponse::new)
 				.toList();
 		}
-		
+
 		return orderRepository.findAllByOrderStatusAndStoreOrElseThrow(OrderStatus.of(status), store, pageRequest)
 			.stream()
 			.map(SearchOrderResponse::new)
