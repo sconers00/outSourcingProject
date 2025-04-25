@@ -2,7 +2,6 @@ package com.example.outsourcingproject.user.service;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.order.entity.Orders;
-import com.example.outsourcingproject.order.repository.OrderRepository;
+import com.example.outsourcingproject.order.service.OrderService;
 import com.example.outsourcingproject.user.dto.SearchOrderResponse;
 import com.example.outsourcingproject.user.entity.User;
 import com.example.outsourcingproject.user.repository.UserRepository;
@@ -25,7 +24,7 @@ public class UserService {
 
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
-	private final OrderRepository orderRepository;
+	private final OrderService orderService;
 
 	// 유저 id를 HttpServletRequest에서 바로 추출할 수 있습니다.
 	// 위의 JwtUtil 의존성을 추가해주시고
@@ -45,7 +44,7 @@ public class UserService {
 
 		PageRequest pageRequest = PageRequest.of(index - 1, 10);
 
-		Page<Orders> orderPage = orderRepository.findAllByUserOrElseThrow(user, pageRequest);
+		List<Orders> orderPage = orderService.findOrderByUser(user, pageRequest);
 		if (orderPage.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
