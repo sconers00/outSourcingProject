@@ -8,10 +8,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.outsourcingproject.menu.entity.Menu;
+import com.example.outsourcingproject.store.entity.Store;
 
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
-	@Query("select m from Menu m where m.storeId= :id")
+	@Query("select m from Menu m where m.storeId=:id AND NOT m.menuPrice=:price")
 	List<Menu> findByStoreId(
-		@Param("id") Long id);
+		@Param("id") Store id, @Param("price") Long price);
 }

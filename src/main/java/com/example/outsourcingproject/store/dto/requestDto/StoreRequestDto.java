@@ -3,6 +3,7 @@ package com.example.outsourcingproject.store.dto.requestDto;
 import com.example.outsourcingproject.store.entity.Store;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class StoreRequestDto {
 	@Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "시간 형식은 HH:mm 형식이어야 합니다. (예: 09:00)")
 	private final String closeTime;
 
-	@NotBlank(message = "최소 주문 금액은 필수입니다")
+	@NotNull(message = "최소 주문 금액은 필수입니다")
 	private final int minOrderPrice;
 
 	@Builder
