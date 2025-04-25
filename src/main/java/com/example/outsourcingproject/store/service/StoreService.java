@@ -28,30 +28,45 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StoreService {
 
+	// private final User user;
 	private final MenuService menuService;
 	private final UserRepository userRepository;
 	private final StoreRepository storeRepository;
 	private final JwtUtil jwtUtil;
 
 	@Transactional
-	public StoreResponseDto registerStore(Long userId, StoreRequestDto storeRequestDto,  HttpServletRequest request) {
+	public StoreResponseDto registerStore(Long userId, StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-		if(!user.getUserRole().equals(UserRole.OWNER)) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사장님만이 가게를 등록할 수 있습니다.");
-	}
+		Long storeCount = storeRepository.countStoresByUser(user);
 
-		if(storeRepository.findByStoreName(storeRequestDto.getStoreName()).isPresent()) {
+		if (!user.getUserRole().equals(UserRole.OWNER)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사장님만이 가게를 등록할 수 있습니다.");
+		}
+
+		if (storeCount > 3) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "가게를 세 개 초과해서 등록할 수 없습니다.");
+		}
+
+		if (storeRepository.findByStoreName(storeRequestDto.getStoreName()).isPresent()) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 이름입니다.");
 		}
 
-		 if(storeRepository.findByStoreTelNumber(storeRequestDto.getStoreTelNumber()).isPresent()) {
-			 throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 전화번호입니다.");
-		 }
+		if (storeRepository.findByStoreTelNumber(storeRequestDto.getStoreTelNumber()).isPresent()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 전화번호입니다.");
+		}
 
-		Store store = storeRequestDto.toEntity();
+		Store store = Store.builder()
+			.storeName(storeRequestDto.getStoreName())
+			.storeTelNumber(storeRequestDto.getStoreTelNumber())
+			.address(storeRequestDto.getAddress())
+			.openTime(storeRequestDto.getOpenTime())
+			.closeTime(storeRequestDto.getCloseTime())
+			.minOrderPrice(storeRequestDto.getMinOrderPrice())
+			.user(user)
+			.build();
 
 		Store savedStore = storeRepository.save(store);
 
@@ -87,12 +102,19 @@ public class StoreService {
 			.collect(Collectors.toList());
 	}
 
+	@Transactional
 	public void delete(Long userId, Long id) {
+
+		// 유저 일치 예외처리 만들기
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
-		findStore.deleteStore(findStore.getStoreName(), true);
+		if(!findStore.getUser().getUserId().equals(userId)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다.");
+		}
 
-		storeRepository.delete(findStore);
+		findStore.deleteStore();
+
+
 	}
 }
