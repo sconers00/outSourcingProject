@@ -9,8 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
-import com.example.outsourcingproject.menu.entity.Menu;
-import com.example.outsourcingproject.menu.repository.MenuRepository;
+import com.example.outsourcingproject.menu.service.MenuService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.entity.Store;
@@ -29,26 +28,26 @@ public class StoreService {
 
 	private final UserRepository userRepository;
 	private final StoreRepository storeRepository;
-	private final MenuRepository menuRepository;
+	private final MenuService menuService;
 	private final JwtUtil jwtUtil;
 
 	@Transactional
-	public StoreResponseDto registerStore(Long userId, StoreRequestDto storeRequestDto,  HttpServletRequest request) {
+	public StoreResponseDto registerStore(Long userId, StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-		if(!user.getUserRole().equals(UserRole.OWNER)) {
+		if (!user.getUserRole().equals(UserRole.OWNER)) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사장님만이 가게를 등록할 수 있습니다.");
-	}
+		}
 
-		if(storeRepository.findByStoreName(storeRequestDto.getStoreName()).isPresent()) {
+		if (storeRepository.findByStoreName(storeRequestDto.getStoreName()).isPresent()) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 이름입니다.");
 		}
 
-		 if(storeRepository.findByStoreTelNumber(storeRequestDto.getStoreTelNumber()).isPresent()) {
-			 throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 전화번호입니다.");
-		 }
+		if (storeRepository.findByStoreTelNumber(storeRequestDto.getStoreTelNumber()).isPresent()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 전화번호입니다.");
+		}
 
 		Store store = storeRequestDto.toEntity();
 
@@ -71,13 +70,9 @@ public class StoreService {
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
-		List<Menu> menuList = menuRepository.findByStoreId(findStore.getId());
+		List<MenuResponseDto> menuList = menuService.findByStoreId(findStore.getId());
 
-		List<MenuResponseDto> menuResponseList = menuList.stream()
-			.map(MenuResponseDto::toDto)
-			.collect(Collectors.toList());
-
-		return StoreResponseDto.fromMenu(findStore, menuResponseList);
+		return StoreResponseDto.fromMenu(findStore, menuList);
 	}
 
 	public List<StoreResponseDto> findAll() {
