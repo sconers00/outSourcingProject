@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,7 +52,7 @@ public class ReviewController {
 	 * UserDetails에서 사용자 ID 추출
 	 * 프로젝트의 UserDetails 구현체에 따라 변경 필요
 	 */
-	private Long extractUserId(UserDetails userDetails) {
+	private Long extractUserId() {
 		// 실제 구현에 맞게 캐스팅 및 추출 //
 		// 예: return ((CustomUserDetails) userDetails).getUserId();
 		return 1L; // TODO: 실제 구현체로 교체 필요
