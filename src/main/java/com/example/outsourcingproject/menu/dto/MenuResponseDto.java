@@ -16,6 +16,7 @@ public class MenuResponseDto {
 
 	public static MenuResponseDto toDto(Menu menu) {
 		return MenuResponseDto.builder()
+			.menuId(menu.getMenuId())
 			.menuName(menu.getMenuName())
 			.menuPrice(menu.getMenuPrice())
 			.discription(menu.getDiscription())

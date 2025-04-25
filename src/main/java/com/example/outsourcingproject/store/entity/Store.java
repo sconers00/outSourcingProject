@@ -4,6 +4,7 @@ import com.example.outsourcingproject.common.entity.BaseEntity;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.user.entity.User;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,9 +14,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "store")
 public class Store extends BaseEntity {
 
@@ -23,25 +26,29 @@ public class Store extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(nullable = false)
 	private String storeName;
 
+	@Column(nullable = false)
 	private String address;
 
+	@Column(nullable = false)
 	private String storeTelNumber;
 
+	@Column(nullable = false)
 	private String openTime;
 
+	@Column(nullable = false)
 	private String closeTime;
 
+	@Column(nullable = false)
 	private int minOrderPrice;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User userId;
 
-
-	public Store() {
-	}
+	private boolean isDeleted = false;
 
 	@Builder
 	public Store(String storeName, String address, String storeTelNumber, String openTime, String closeTime,
@@ -63,4 +70,8 @@ public class Store extends BaseEntity {
 		this.closeTime = storeRequestDto.getCloseTime();
 	}
 
+	public void deleteStore(String storeName, boolean isDeleted) {
+		this.storeName = storeName;
+		this.isDeleted = isDeleted;
+	}
 }

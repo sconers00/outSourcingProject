@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.outsourcingproject.common.JwtUtil;
+import com.example.outsourcingproject.menu.dto.MenuResponseDto;
+import com.example.outsourcingproject.menu.entity.Menu;
+import com.example.outsourcingproject.menu.repository.MenuRepository;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.entity.Store;
@@ -26,17 +29,26 @@ public class StoreService {
 
 	private final UserRepository userRepository;
 	private final StoreRepository storeRepository;
+	private final MenuRepository menuRepository;
 	private final JwtUtil jwtUtil;
 
 	@Transactional
 	public StoreResponseDto registerStore(Long userId, StoreRequestDto storeRequestDto,  HttpServletRequest request) {
 
-	//	getUserId(userId);
-	// 	if(User.userRole().equals(UserRole.OWNER) {
-	// 		throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사장님만이 가게를 등록할 수 있습니다.");
-	// }
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+		if(!user.getUserRole().equals(UserRole.OWNER)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사장님만이 가게를 등록할 수 있습니다.");
+	}
 
+		if(storeRepository.findByStoreName(storeRequestDto.getStoreName()).isPresent()) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 이름입니다.");
+		}
+
+		 if(storeRepository.findByStoreTelNumber(storeRequestDto.getStoreTelNumber()).isPresent()) {
+			 throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 가게 전화번호입니다.");
+		 }
 
 		Store store = storeRequestDto.toEntity();
 
@@ -46,7 +58,7 @@ public class StoreService {
 	}
 
 	@Transactional
-	public StoreResponseDto updateById(Long id, StoreRequestDto storeRequestDto) {
+	public StoreResponseDto updateById(Long id, StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
@@ -59,7 +71,13 @@ public class StoreService {
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
-		return StoreResponseDto.from(findStore);
+		List<Menu> menuList = menuRepository.findByStoreId(findStore.getId());
+
+		List<MenuResponseDto> menuResponseList = menuList.stream()
+			.map(MenuResponseDto::toDto)
+			.collect(Collectors.toList());
+
+		return StoreResponseDto.fromMenu(findStore, menuResponseList);
 	}
 
 	public List<StoreResponseDto> findAll() {
@@ -72,9 +90,11 @@ public class StoreService {
 			.collect(Collectors.toList());
 	}
 
-	public void delete(Long id) {
+	public void delete(Long userId, Long id) {
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
+
+		findStore.deleteStore(findStore.getStoreName(), true);
 
 		storeRepository.delete(findStore);
 	}

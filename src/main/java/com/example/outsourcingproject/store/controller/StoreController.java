@@ -27,14 +27,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users/{userId}/stores")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class StoreController {
 
 	private final StoreService storeService;
 	private final OrderService orderService;
 
-	@PostMapping
+	@PostMapping("/users/{userId}/stores")
 	public ResponseEntity<StoreResponseDto> registerStore(@PathVariable Long userId,
 		@RequestBody @Valid StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
@@ -43,17 +43,19 @@ public class StoreController {
 		return new ResponseEntity<>(storeResponseDto, HttpStatus.CREATED);
 	}
 
-	@PatchMapping("/{id}")
+	@PatchMapping("/users/{userId}/stores/{id}")
 	public ResponseEntity<StoreResponseDto> updateStore(
+		@PathVariable Long userId,
 		@PathVariable Long id,
-		@RequestBody @Valid StoreRequestDto storeRequestDto) {
+		@RequestBody @Valid StoreRequestDto storeRequestDto,
+		HttpServletRequest request) {
 
-		StoreResponseDto storeResponseDto = storeService.updateById(id, storeRequestDto);
+		StoreResponseDto storeResponseDto = storeService.updateById(id, storeRequestDto, request);
 
 		return new ResponseEntity<>(storeResponseDto, HttpStatus.OK);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/stores/{id}")
 	public ResponseEntity<StoreResponseDto> findById(@PathVariable Long id) {
 
 		StoreResponseDto storeResponseDto = storeService.findById(id);
@@ -61,7 +63,7 @@ public class StoreController {
 		return new ResponseEntity<>(storeResponseDto, HttpStatus.OK);
 	}
 
-	@GetMapping
+	@GetMapping("/stores")
 	public ResponseEntity<List<StoreResponseDto>> findAll() {
 
 		List<StoreResponseDto> findAllStore = storeService.findAll();
@@ -69,10 +71,10 @@ public class StoreController {
 		return new ResponseEntity<>(findAllStore, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	@DeleteMapping("/users/{userId}/stores/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long userId,@PathVariable Long id) {
 
-		storeService.delete(id);
+		storeService.delete(userId, id);
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

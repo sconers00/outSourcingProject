@@ -55,7 +55,7 @@ public class Menu extends BaseEntity {
 		this.discription = discription;
 	}
 
-	public void deltetMenu(String menuName, long menuPrice, boolean isDeleted) {
+	public void deletetMenu(String menuName, long menuPrice, boolean isDeleted) {
 		this.menuName = menuName;
 		this.menuPrice = menuPrice;
 		this.isDeleted = isDeleted;
