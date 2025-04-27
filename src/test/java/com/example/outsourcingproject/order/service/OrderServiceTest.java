@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.outsourcingproject.common.JwtUtil;
@@ -58,7 +60,7 @@ class OrderServiceTest {
 	@Mock
 	private User mockUser;
 	@Mock
-	private Orders mockOrders;
+	private PageRequest pageRequest;
 
 	@InjectMocks
 	OrderService orderService;
@@ -233,22 +235,93 @@ class OrderServiceTest {
 		}
 	}
 
-	@Test
-	void findOrderByStore() {
-		List<SearchOrderResponse> returnThis = new ArrayList<>();
-		SearchOrderResponse response = SearchOrderResponse.builder()
-			.address("testAddr")
-			.quantity(1L)
-			.build();
-		returnThis.add(response);
+	@Nested
+	class FindOrderByStore {
 
-		given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
-		given(storeRepository.findById(anyLong())).willReturn(Optional.of(mockStore));
-		
-		List<SearchOrderResponse> list = orderService.findOrderByStore(httpServletRequest, 1L, "ALL", 1);
+		@Test
+		void findALLOrderByStore() {
+			List<Orders> listToPage = new ArrayList<>();
+			Orders orders = Orders.builder()
+				.store(mockStore)
+				.quantity(1L)
+				.menu(mockMenu)
+				.address("testAddr")
+				.user(mockUser)
+				.orderStatus(OrderStatus.PENDING)
+				.build();
+			listToPage.add(orders);
+			PageImpl<Orders> page = new PageImpl<>(listToPage);
+
+			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(mockUser));
+			given(storeRepository.findById(anyLong())).willReturn(Optional.of(mockStore));
+			given(mockStore.getUser()).willReturn(mockUser);
+			given(orderRepository.findAllByStoreOrElseThrow(any(), any())).willReturn(page);
+
+			List<SearchOrderResponse> list = orderService.findOrderByStore(httpServletRequest, 1L, "ALL", 1);
+			assertEquals("testAddr", list.get(0).getAddress());
+			assertEquals(OrderStatus.PENDING.toString(), list.get(0).getOrderStatus());
+			assertEquals(1L, list.get(0).getQuantity());
+		}
+
+		@Test
+		void findCertainOrderByStore() {
+			List<Orders> listToPage = new ArrayList<>();
+			Orders orders = Orders.builder()
+				.store(mockStore)
+				.quantity(1L)
+				.menu(mockMenu)
+				.address("testAddr")
+				.user(mockUser)
+				.orderStatus(OrderStatus.PENDING)
+				.build();
+			listToPage.add(orders);
+			PageImpl<Orders> page = new PageImpl<>(listToPage);
+
+			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(mockUser));
+			given(storeRepository.findById(anyLong())).willReturn(Optional.of(mockStore));
+			given(mockStore.getUser()).willReturn(mockUser);
+			given(orderRepository.findAllByOrderStatusAndStoreOrElseThrow(any(), any(), any())).willReturn(page);
+
+			List<SearchOrderResponse> list = orderService.findOrderByStore(httpServletRequest, 1L, "PENDING", 1);
+			assertEquals("testAddr", list.get(0).getAddress());
+			assertEquals(OrderStatus.PENDING.toString(), list.get(0).getOrderStatus());
+			assertEquals(1L, list.get(0).getQuantity());
+		}
+
+		@Test
+		void userIsNotOwner() {
+			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(mockUser));
+			given(storeRepository.findById(anyLong())).willReturn(Optional.of(mockStore));
+			given(mockStore.getUser()).willReturn(new User());
+
+			ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+				() -> orderService.findOrderByStore(httpServletRequest, 1L, "PENDING", 1));
+			assertEquals("401 UNAUTHORIZED \"해당 가게의 주인이 아닙니다.\"", exception.getMessage());
+		}
+
 	}
 
 	@Test
 	void findOrderByUser() {
+		List<Orders> listToPage = new ArrayList<>();
+		Orders orders = Orders.builder()
+			.store(mockStore)
+			.quantity(1L)
+			.menu(mockMenu)
+			.address("testAddr")
+			.user(mockUser)
+			.orderStatus(OrderStatus.PENDING)
+			.build();
+		listToPage.add(orders);
+		PageImpl<Orders> page = new PageImpl<>(listToPage);
+
+		given(orderRepository.findAllByUserOrElseThrow(any(), any())).willReturn(page);
+		List<Orders> list = orderService.findOrderByUser(mockUser, pageRequest);
+		assertEquals("testAddr", list.get(0).getAddress());
+		assertEquals(OrderStatus.PENDING, list.get(0).getOrderStatus());
+		assertEquals(1L, list.get(0).getQuantity());
 	}
 }

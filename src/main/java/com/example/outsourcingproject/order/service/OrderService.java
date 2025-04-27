@@ -88,15 +88,17 @@ public class OrderService {
 	public List<SearchOrderResponse> findOrderByStore(HttpServletRequest request, Long storeId, String status,
 		int index) {
 		Long userId = jwtUtil.getIdFromRequest(request);
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 		Store store = storeRepository.findById(storeId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		if (!store.getUser().equals(userId)) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+		if (!store.getUser().equals(user)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 가게의 주인이 아닙니다.");
 		}
 
 		PageRequest pageRequest = PageRequest.of(index - 1, 10);
 
-		if (status.equals("All")) {
+		if (status.equals("ALL")) {
 			return orderRepository.findAllByStoreOrElseThrow(store, pageRequest)
 				.stream()
 				.map(SearchOrderResponse::new)
@@ -109,6 +111,7 @@ public class OrderService {
 			.toList();
 	}
 
+	// 타 service 에서 접근하는 메서드
 	public List<Orders> findOrderByUser(User user, PageRequest pageRequest) {
 		return orderRepository.findAllByUserOrElseThrow(user, pageRequest).stream().toList();
 	}

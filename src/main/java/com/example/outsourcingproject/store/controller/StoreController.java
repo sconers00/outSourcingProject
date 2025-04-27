@@ -79,7 +79,7 @@ public class StoreController {
 	}
 
 	//주문 관련 메서드
-	@PatchMapping("{storeId}/orders/{orderId}")
+	@PatchMapping("/stores/{storeId}/orders/{orderId}")
 	public ResponseEntity<OrderResponse> changeOrderState(@PathVariable Long orderId, @PathVariable Long storeId,
 		HttpServletRequest request,
 		@RequestBody ChangeOrderState changeOrderState) {
@@ -87,10 +87,10 @@ public class StoreController {
 			.body(orderService.changeOrderState(request, changeOrderState.getOrderState(), orderId, storeId));
 	}
 
-	@GetMapping("{storeId}/orders")
+	@GetMapping("/stores/{storeId}/orders")
 	public ResponseEntity<List<SearchOrderResponse>> searchdOrder(HttpServletRequest request,
 		@PathVariable Long storeId,
-		@RequestParam(value = "status", defaultValue = "All", required = false) String status,
+		@RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
 		@RequestParam(value = "index", defaultValue = "1", required = false) int index) {
 		List<SearchOrderResponse> list = orderService.findOrderByStore(request, storeId, status, index);
 		return ResponseEntity.ok()
