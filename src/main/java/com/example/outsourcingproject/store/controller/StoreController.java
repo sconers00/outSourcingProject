@@ -27,25 +27,24 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class StoreController {
 
 	private final StoreService storeService;
 	private final OrderService orderService;
 
-	@PostMapping("/users/{userId}/stores")
-	public ResponseEntity<StoreResponseDto> registerStore(@PathVariable Long userId,
+	@PostMapping("/stores")
+	public ResponseEntity<StoreResponseDto> registerStore(
 		@RequestBody @Valid StoreRequestDto storeRequestDto, HttpServletRequest request) {
 
-		StoreResponseDto storeResponseDto = storeService.registerStore(userId, storeRequestDto, request);
+		StoreResponseDto storeResponseDto = storeService.registerStore(storeRequestDto, request);
 
 		return new ResponseEntity<>(storeResponseDto, HttpStatus.CREATED);
 	}
 
-	@PatchMapping("/users/{userId}/stores/{id}")
+	@PatchMapping("/stores/{id}")
 	public ResponseEntity<StoreResponseDto> updateStore(
-		@PathVariable Long userId,
 		@PathVariable Long id,
 		@RequestBody @Valid StoreRequestDto storeRequestDto,
 		HttpServletRequest request) {
@@ -71,10 +70,10 @@ public class StoreController {
 		return new ResponseEntity<>(findAllStore, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/users/{userId}/stores/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long userId,@PathVariable Long id) {
+	@DeleteMapping("/stores/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id, HttpServletRequest request) {
 
-		storeService.delete(userId, id);
+		storeService.delete(id, request);
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

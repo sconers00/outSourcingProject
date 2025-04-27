@@ -1,5 +1,4 @@
 package com.example.outsourcingproject.review.controller;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -11,32 +10,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.outsourcingproject.review.dto.ReviewRequestDto;
 import com.example.outsourcingproject.review.dto.ReviewResponseDto;
 import com.example.outsourcingproject.review.service.ReviewService;
-
+import com.example.outsourcingproject.common.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class ReviewController {
-
 	private final ReviewService reviewService;
-
+	private final JwtUtil jwtUtil;
 	@PostMapping("/orders/{orderId}/reviews")
 	public ResponseEntity<ReviewResponseDto> createReview(
 		@PathVariable Long orderId,
-		@RequestBody ReviewRequestDto reviewRequestDto
-		//@AuthenticationPrincipal UserDetails userDetails
+		@RequestBody ReviewRequestDto reviewRequestDto,
+		HttpServletRequest request
 	) {
-		//Long userId = extractUserId(userDetails);
-		Long userId = 1L;
+		Long userId = jwtUtil.getIdFromRequest(request);
 		ReviewResponseDto responseDto = reviewService.createReview(orderId, reviewRequestDto, userId);
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 	}
-
 	@GetMapping("/stores/{storeId}/reviews")
 	public ResponseEntity<Page<ReviewResponseDto>> getStoreReviews(
 		@PathVariable Long storeId,
@@ -47,25 +42,4 @@ public class ReviewController {
 		Page<ReviewResponseDto> reviews = reviewService.getStoreReviews(storeId, minRating, maxRating, pageable);
 		return ResponseEntity.ok(reviews);
 	}
-
-	/**
-	 * UserDetails에서 사용자 ID 추출
-	 * 프로젝트의 UserDetails 구현체에 따라 변경 필요
-	 */
-	private Long extractUserId() {
-		// 실제 구현에 맞게 캐스팅 및 추출 //
-		// 예: return ((CustomUserDetails) userDetails).getUserId();
-		return 1L; // TODO: 실제 구현체로 교체 필요
-	}
 }
-
-
-
-/*
-지금 dev에 커밋한거는 임의로 유저id 1로 고정해서 받게해둔상태
-나중에 고쳐야함
-
-유저 id 받는 방법 userController 랑, userService에 주석이랑 같이해서
-기입
-
- */
