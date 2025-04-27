@@ -22,6 +22,7 @@ import com.example.outsourcingproject.auth.dto.SigninResponse;
 import com.example.outsourcingproject.auth.dto.SignupRequest;
 import com.example.outsourcingproject.auth.dto.SignupResponse;
 import com.example.outsourcingproject.auth.service.AuthService;
+import com.example.outsourcingproject.common.GlobalExceptionHandler;
 import com.example.outsourcingproject.common.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,6 +43,8 @@ class AuthControllerTest {
 	private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 	@MockitoBean
 	private HttpServletRequest httpServletRequest;
+	@MockitoBean
+	private GlobalExceptionHandler globalExceptionHandler;
 
 	@Test
 	void signup() throws Exception {
@@ -81,20 +84,6 @@ class AuthControllerTest {
 			.andDo(print());
 	}
 
-	@Test
-	void logout() throws Exception {
-		//given
-		Cookie[] cookies = {new Cookie("token", "testToken")};
-		given(httpServletRequest.getCookies()).willReturn(cookies);
-		//when & then
-		mockMvc.perform(delete("/api/auth/logout")
-				.cookie(new Cookie("token", "testToken"))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString("로그아웃 되었습니다.")))
-			.andExpect(status().isOk())
-			.andDo(print());
-	}
-
 	@Nested
 	class Logout {
 		@Test
@@ -106,9 +95,9 @@ class AuthControllerTest {
 			//when & then
 			mockMvc.perform(delete("/api/auth/logout")
 					.cookie(new Cookie("token", "testToken"))
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(new ObjectMapper().writeValueAsString("로그아웃 되었습니다.")))
+					.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
+				.andExpect(content().string("로그아웃 되었습니다."))
 				.andDo(print());
 		}
 
@@ -118,8 +107,8 @@ class AuthControllerTest {
 			//given & when & then
 			mockMvc.perform(delete("/api/auth/logout"))
 				.andExpect(status().isNotFound())
+				.andExpect(status().reason("쿠키가 존재하지 않습니다."))
 				.andDo(print());
 		}
 	}
-
 }

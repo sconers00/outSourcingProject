@@ -39,7 +39,7 @@ public class OrderService {
 		Long userId = jwtUtil.getIdFromRequest(request);
 		User userFounded = userRepository.findById(userId).orElseThrow();
 		if (!userFounded.getUserRole().equals(UserRole.CUSTOMER)) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "손님이 아닌 유저는 주문할 수 없습니다.");
 		}
 		Orders orders = Orders.builder()
 			.user(userFounded)
@@ -62,23 +62,23 @@ public class OrderService {
 		Long userId = jwtUtil.getIdFromRequest(request);
 		User userFounded = userRepository.findById(userId).orElseThrow();
 		Orders orders = orderRepository.findById(id[0])
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
 		if (userFounded.getUserRole().equals(UserRole.CUSTOMER)) {
 			if (!orders.getUser().equals(userFounded)) {
-				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "주문한 유저가 아닙니다.");
 			}
+			orders.chageStatus(orderState);
+			return new OrderResponse(orders);
 		}
 
-		if (userFounded.getUserRole().equals(UserRole.OWNER)) {
-			Store store = storeRepository.findById(id[1])
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-			if (!orders.getStore().equals(store)) {
-				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-			}
-			if (!store.getUser().equals(userFounded)) {
-				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-			}
+		Store store = storeRepository.findById(id[1])
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		if (!store.getUser().equals(userFounded)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 가게의 주인이 아닙니다.");
+		}
+		if (!orders.getStore().equals(store)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 가게의 주문이 아닙니다.");
 		}
 
 		orders.chageStatus(orderState);

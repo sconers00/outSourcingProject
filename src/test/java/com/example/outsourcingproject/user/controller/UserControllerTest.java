@@ -39,16 +39,17 @@ class UserControllerTest {
 
 	@Test
 	void deleteAccount() throws Exception {
-
+		//given & when & then
 		mockMvc.perform(patch("/api/users")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString("탈퇴 되었습니다.")))
+				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
+			.andExpect(content().string("탈퇴 되었습니다."))
 			.andDo(print());
 	}
 
 	@Test
 	void searchRequestedOrder() throws Exception {
+		//given
 		List<SearchOrderResponse> list = new ArrayList<>();
 		SearchOrderResponse searchOrderResponse = SearchOrderResponse.builder()
 			.address("somewhere")
@@ -58,10 +59,13 @@ class UserControllerTest {
 			.build();
 		list.add(searchOrderResponse);
 		given(userService.searchRequestedOrder(any(), anyInt())).willReturn(list);
+		//when & then
 		mockMvc.perform(get("/api/users/me/orders")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(list)))
 			.andExpect(status().isOk())
+			.andExpect(content().json(
+				"[{\"orderId\":null,\"storeId\":1,\"menuId\":1,\"quantity\":1,\"address\":\"somewhere\",\"orderStatus\":null,\"orderedAt\":null}]"))
 			.andDo(print());
 	}
 }

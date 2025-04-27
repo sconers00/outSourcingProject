@@ -46,7 +46,7 @@ public class UserService {
 
 		List<Orders> orderPage = orderService.findOrderByUser(user, pageRequest);
 		if (orderPage.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "주문이 존재하지 않습니다.");
 		}
 
 		return orderPage.stream().map(SearchOrderResponse::new).toList();
