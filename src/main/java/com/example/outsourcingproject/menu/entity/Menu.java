@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.menu.entity;
 
-import com.example.outsourcingproject.common.entity.BaseEntity;
+import com.example.outsourcingproject.common.BaseEntity;
 import com.example.outsourcingproject.store.entity.Store;
 
 import jakarta.persistence.Column;

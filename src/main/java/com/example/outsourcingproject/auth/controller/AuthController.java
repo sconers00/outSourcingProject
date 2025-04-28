@@ -18,7 +18,6 @@ import com.example.outsourcingproject.auth.dto.SigninResponse;
 import com.example.outsourcingproject.auth.dto.SignupRequest;
 import com.example.outsourcingproject.auth.dto.SignupResponse;
 import com.example.outsourcingproject.auth.service.AuthService;
-import com.example.outsourcingproject.common.JwtUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -30,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
 	private final AuthService authService;
-	private final JwtUtil jwtUtil;
 
 	@PostMapping("/signup")
 	public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest request) {
