@@ -11,6 +11,7 @@ import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
 import com.example.outsourcingproject.menu.service.MenuService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
+import com.example.outsourcingproject.store.dto.responseDto.GetStoreResponseDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.entity.Store;
 import com.example.outsourcingproject.store.repository.StoreRepository;
@@ -46,7 +47,7 @@ public class StoreService {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "사장님만이 가게를 등록할 수 있습니다.");
 		}
 
-		if (storeCount > 3) {
+		if (storeCount >= 3) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "가게를 세 개 초과해서 등록할 수 없습니다.");
 		}
 
@@ -89,13 +90,13 @@ public class StoreService {
 		return StoreResponseDto.from(findStore);
 	}
 
-	public StoreResponseDto findById(Long id) {
+	public GetStoreResponseDto findById(Long id) {
 
 		Store findStore = storeRepository.findByIdOrElseThrow(id);
 
 		List<MenuResponseDto> menuList = menuService.findByStoreId(findStore.getId());
 
-		return StoreResponseDto.fromMenu(findStore, menuList);
+		return GetStoreResponseDto.fromMenu(findStore, menuList);
 	}
 
 	public List<StoreResponseDto> findAll() {
