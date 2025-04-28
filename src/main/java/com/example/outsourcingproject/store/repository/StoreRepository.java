@@ -10,8 +10,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.outsourcingproject.store.entity.Store;
 import com.example.outsourcingproject.user.entity.User;
 
-import jakarta.validation.constraints.NotBlank;
-
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
 	default Store findByIdOrElseThrow(Long id) {
@@ -26,4 +24,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 	Optional<Store> findByStoreTelNumber(String storeName);
 
 	Long countStoresByUser(User user);
+
+	Optional<List<Store>> findAllByUser(User userFounded);
 }

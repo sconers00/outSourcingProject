@@ -48,4 +48,6 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
 		int end = Math.min(start + pageRequest.getPageSize(), foundList.size());
 		return new PageImpl<>(foundList.subList(start, end), pageRequest, foundList.size());
 	}
+
+	User user(User user);
 }

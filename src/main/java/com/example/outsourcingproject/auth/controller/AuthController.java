@@ -75,7 +75,7 @@ public class AuthController {
 	@DeleteMapping("/logout")
 	public ResponseEntity<String> logout(HttpServletRequest request) {
 		if (request.getCookies() == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "쿠키가 존재하지 않습니다.");
 		}
 		ResponseCookie cookie = ResponseCookie.from("token")
 			.httpOnly(true)

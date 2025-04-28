@@ -27,7 +27,7 @@ public class AuthService {
 
 	public SignupResponse signup(@Valid SignupRequest request) {
 		if (userRepository.existsByEmail(request.getEmail())) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "중복된 이메일입니다.");
 		}
 
 		String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -49,13 +49,13 @@ public class AuthService {
 	@Transactional
 	public SigninResponse login(@Valid SigninRequest request) {
 		User user = userRepository.findByEmail(request.getEmail())
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."));
 
 		if (user.isDeleted()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제된 유저입니다.");
 		}
 		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
 		}
 
 		String token = jwtUtil.createToken(user.getUserId(), user.getEmail(), user.getUserRole());

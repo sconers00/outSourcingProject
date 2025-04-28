@@ -34,7 +34,7 @@ public class SearchOrderResponse {
 
 	public SearchOrderResponse(Orders orders) {
 		this.orderId = orders.getOrderId();
-		this.storeId = 1L;
+		this.storeId = orders.getStore().getId();
 		this.menuId = orders.getMenu().getMenuId();
 		this.quantity = orders.getQuantity();
 		this.address = orders.getAddress();
