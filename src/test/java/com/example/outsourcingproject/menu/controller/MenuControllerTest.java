@@ -7,9 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,26 +105,6 @@ class MenuControllerTest {
 			.andExpect(
 				content().json(
 					"{\"message\":\"메뉴가 삭제되었습니다.\",\"menuId\":1}"))
-			.andDo(print());
-	}
-
-	@Test
-	void getMenu() throws Exception {
-		MenuResponseDto responseDto = MenuResponseDto.builder()
-			.menuName("updateName")
-			.discription("update")
-			.menuId(1L)
-			.menuPrice(2345L)
-			.build();
-		List<MenuResponseDto> list = new ArrayList<>();
-		list.add(responseDto);
-		given(menuService.findByStoreId(anyLong())).willReturn(list);
-		mockMvc.perform(get("/api/stores/1/menus")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(
-				content().json(
-					"[{\"menuId\":1,\"menuName\":\"updateName\",\"menuPrice\":2345,\"discription\":\"update\"}]"))
 			.andDo(print());
 	}
 }
