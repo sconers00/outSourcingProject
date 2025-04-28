@@ -25,6 +25,7 @@ import com.example.outsourcingproject.order.dto.ChangeOrderState;
 import com.example.outsourcingproject.order.dto.OrderResponse;
 import com.example.outsourcingproject.order.service.OrderService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
+import com.example.outsourcingproject.store.dto.responseDto.GetStoreResponseDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.service.StoreService;
 import com.example.outsourcingproject.user.dto.SearchOrderResponse;
@@ -120,7 +121,7 @@ class StoreControllerTest {
 
 	@Test
 	void findById() throws Exception {
-		StoreResponseDto responseDto = StoreResponseDto.builder()
+		GetStoreResponseDto responseDto = GetStoreResponseDto.builder()
 			.id(1L)
 			.address("changedAddr")
 			.closeTime("12:12")

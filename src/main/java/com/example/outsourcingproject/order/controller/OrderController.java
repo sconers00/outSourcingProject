@@ -30,6 +30,6 @@ public class OrderController {
 	@PatchMapping("/{orderId}")
 	public ResponseEntity<OrderResponse> cancelOrder(HttpServletRequest request, @PathVariable Long orderId) {
 		return ResponseEntity.ok()
-			.body(orderService.cancleOrder(request, orderId));
+			.body(orderService.cancelOrder(request, orderId));
 	}
 }

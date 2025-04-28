@@ -21,6 +21,7 @@ import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
 import com.example.outsourcingproject.menu.service.MenuService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
+import com.example.outsourcingproject.store.dto.responseDto.GetStoreResponseDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.entity.Store;
 import com.example.outsourcingproject.store.repository.StoreRepository;
@@ -228,7 +229,7 @@ class StoreServiceTest {
 		given(storeRepository.findByIdOrElseThrow(anyLong())).willReturn(store);
 		given(menuService.findByStoreId(any())).willReturn(list);
 		//when
-		StoreResponseDto responseDto = storeService.findById(1L);
+		GetStoreResponseDto responseDto = storeService.findById(1L);
 		//then
 		assertEquals("testStore", responseDto.getStoreName());
 		assertEquals("testMenu", responseDto.getMenuList().get(0).getMenuName());

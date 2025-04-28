@@ -85,7 +85,7 @@ class OrderControllerTest {
 			.orderId(1L)
 			.build();
 		Cookie[] cookies = {new Cookie("token", "testToken")};
-		given(orderService.changeOrderState(any(), anyString(), anyLong())).willReturn(response);
+		given(orderService.cancelOrder(any(), anyLong())).willReturn(response);
 
 		//when & then
 		mockMvc.perform(patch("/api/orders/1")

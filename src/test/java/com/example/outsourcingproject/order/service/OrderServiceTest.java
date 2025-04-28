@@ -66,6 +66,45 @@ class OrderServiceTest {
 	OrderService orderService;
 
 	@Nested
+	class CancelOrder {
+		@Test
+		void cancelOrder() {
+			User user = User.builder()
+				.userRole(UserRole.CUSTOMER)
+				.build();
+			Orders orders = Orders.builder()
+				.store(mockStore)
+				.quantity(1L)
+				.orderStatus(OrderStatus.PENDING)
+				.menu(mockMenu)
+				.address("testAddr")
+				.user(user)
+				.build();
+
+			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+			given(orderRepository.findById(anyLong())).willReturn(Optional.of(orders));
+			OrderResponse response = orderService.cancelOrder(any(), 1L);
+			assertEquals("testAddr", response.getAddress());
+		}
+
+		@Test
+		void userIsNotCustomer() {
+			User user = User.builder()
+				.userRole(UserRole.OWNER)
+				.build();
+
+			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+
+			ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+				() -> orderService.cancelOrder(any(), 1L));
+
+			assertEquals("401 UNAUTHORIZED \"손님이 아니면 접근할 수 없습니다.\"", exception.getMessage());
+		}
+	}
+
+	@Nested
 	class CreateOrder {
 		@Test
 		void orderCreate() {
@@ -107,30 +146,6 @@ class OrderServiceTest {
 
 	@Nested
 	class changeOrderState {
-
-		@Test
-		void changeStateAsCustomer() {
-			// given
-			Orders orders = Orders.builder()
-				.user(mockUser)
-				.address("testAddr")
-				.menu(mockMenu)
-				.orderStatus(OrderStatus.PENDING)
-				.quantity(1L)
-				.store(mockStore)
-				.build();
-
-			given(mockUser.getUserRole()).willReturn(UserRole.CUSTOMER);
-			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
-			given(userRepository.findById(anyLong())).willReturn(Optional.of(mockUser));
-			given(orderRepository.findById(anyLong())).willReturn(Optional.of(orders));
-			//when
-			OrderResponse response = orderService.changeOrderState(httpServletRequest, "CANCELED", 1L);
-			//then
-			assertEquals("testAddr", response.getAddress());
-			assertEquals(OrderStatus.CANCELED.toString(), response.getOrderStatus());
-		}
-
 		@Test
 		void changeStateAsOwner() {
 			// given
@@ -157,10 +172,10 @@ class OrderServiceTest {
 		}
 
 		@Test
-		void wrongUser() {
+		void customer() {
 			// given
 			Orders orders = Orders.builder()
-				.user(new User())
+				.user(mockUser)
 				.address("testAddr")
 				.menu(mockMenu)
 				.orderStatus(OrderStatus.PENDING)
@@ -170,13 +185,12 @@ class OrderServiceTest {
 
 			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
 			given(userRepository.findById(anyLong())).willReturn(Optional.of(mockUser));
-			given(orderRepository.findById(anyLong())).willReturn(Optional.of(orders));
 			given(mockUser.getUserRole()).willReturn(UserRole.CUSTOMER);
 			//when
 			ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-				() -> orderService.changeOrderState(httpServletRequest, "ARRIVED", 1L));
+				() -> orderService.changeOrderState(httpServletRequest, "ARRIVED", 1L, 1L));
 			//then
-			assertEquals("401 UNAUTHORIZED \"주문한 유저가 아닙니다.\"", exception.getMessage());
+			assertEquals("401 UNAUTHORIZED \"손님은 접근할 수 없습니다.\"", exception.getMessage());
 		}
 
 		@Test
@@ -261,7 +275,7 @@ class OrderServiceTest {
 
 			//when
 			List<SearchOrderResponse> list = orderService.findOrderByStore(httpServletRequest, 1L, "ALL", 1);
-			
+
 			//then
 			assertEquals("testAddr", list.get(0).getAddress());
 			assertEquals(OrderStatus.PENDING.toString(), list.get(0).getOrderStatus());

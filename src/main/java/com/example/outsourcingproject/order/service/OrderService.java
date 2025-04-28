@@ -58,15 +58,16 @@ public class OrderService {
 	}
 
 	@Transactional
-	public OrderResponse cancleOrder(HttpServletRequest request, Long... id) {
+	public OrderResponse cancelOrder(HttpServletRequest request, Long id) {
 		Long userId = jwtUtil.getIdFromRequest(request);
 		User userFounded = userRepository.findById(userId).orElseThrow();
-		Orders orders = orderRepository.findById(id[0])
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
 		if (!userFounded.getUserRole().equals(UserRole.CUSTOMER)) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "주문한 유저가 아닙니다.");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "손님이 아니면 접근할 수 없습니다.");
 		}
+		
+		Orders orders = orderRepository.findById(id)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
 		if (!orders.getUser().equals(userFounded)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "주문한 유저가 아닙니다.");
@@ -79,12 +80,12 @@ public class OrderService {
 	public OrderResponse changeOrderState(HttpServletRequest request, String orderState, Long... id) {
 		Long userId = jwtUtil.getIdFromRequest(request);
 		User userFounded = userRepository.findById(userId).orElseThrow();
-		Orders orders = orderRepository.findById(id[0])
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
-
 		if (userFounded.getUserRole().equals(UserRole.CUSTOMER)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "손님은 접근할 수 없습니다.");
 		}
+
+		Orders orders = orderRepository.findById(id[0])
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."));
 
 		Store store = storeRepository.findById(id[1])
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
