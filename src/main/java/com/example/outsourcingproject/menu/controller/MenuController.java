@@ -1,11 +1,8 @@
 package com.example.outsourcingproject.menu.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +14,6 @@ import com.example.outsourcingproject.menu.dto.MenuDeleteResponseDto;
 import com.example.outsourcingproject.menu.dto.MenuRequestDto;
 import com.example.outsourcingproject.menu.dto.MenuResponseDto;
 import com.example.outsourcingproject.menu.service.MenuService;
-import com.example.outsourcingproject.store.repository.StoreRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MenuController {
 	private final MenuService menuService;
-	private final StoreRepository storeRepository;
 
 	@PostMapping("/menus")//메뉴추가
 	public ResponseEntity<MenuResponseDto> addMenu(@PathVariable Long storeId,
@@ -52,9 +47,4 @@ public class MenuController {
 		return menuService.delete(storeId, menuId, request);
 	}
 
-	@GetMapping("/menus")
-	public ResponseEntity<List<MenuResponseDto>> getMenu(@PathVariable Long storeId) {
-		List<MenuResponseDto> menuResponseDto = menuService.findByStoreId(storeId);
-		return new ResponseEntity<>(menuResponseDto, HttpStatus.OK);
-	}
 }
