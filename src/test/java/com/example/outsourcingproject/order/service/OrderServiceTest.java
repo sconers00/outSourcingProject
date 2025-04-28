@@ -102,6 +102,30 @@ class OrderServiceTest {
 
 			assertEquals("401 UNAUTHORIZED \"손님이 아니면 접근할 수 없습니다.\"", exception.getMessage());
 		}
+
+		@Test
+		void wrongUser() {
+			User user = User.builder()
+				.userRole(UserRole.CUSTOMER)
+				.build();
+			Orders orders = Orders.builder()
+				.store(mockStore)
+				.quantity(1L)
+				.orderStatus(OrderStatus.PENDING)
+				.menu(mockMenu)
+				.address("testAddr")
+				.user(mockUser)
+				.build();
+
+			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+			given(orderRepository.findById(anyLong())).willReturn(Optional.of(orders));
+
+			ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+				() -> orderService.cancelOrder(any(), 1L));
+
+			assertEquals("401 UNAUTHORIZED \"주문한 유저가 아닙니다.\"", exception.getMessage());
+		}
 	}
 
 	@Nested
@@ -135,6 +159,15 @@ class OrderServiceTest {
 		void userIsNotCustomer() {
 			User user = User.builder()
 				.userRole(UserRole.OWNER)
+				.build();
+
+			Orders orders = Orders.builder()
+				.store(mockStore)
+				.quantity(1L)
+				.orderStatus(OrderStatus.PENDING)
+				.menu(mockMenu)
+				.address("testAddr")
+				.user(mockUser)
 				.build();
 			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
 			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));

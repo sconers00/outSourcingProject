@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.store.entity;
 
-import com.example.outsourcingproject.common.entity.BaseEntity;
+import com.example.outsourcingproject.common.BaseEntity;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
 import com.example.outsourcingproject.user.entity.User;
 

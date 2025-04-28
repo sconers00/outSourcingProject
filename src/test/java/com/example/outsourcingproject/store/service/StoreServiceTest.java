@@ -49,11 +49,9 @@ class StoreServiceTest {
 	private User mockUser;
 	@Mock
 	private Store mockStore;
-	@Mock
-	private StoreRequestDto storeRequestDto;
 
 	@InjectMocks
-	StoreService storeService;
+	private StoreService storeService;
 
 	@Nested
 	class registerStore {

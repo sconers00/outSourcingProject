@@ -2,6 +2,8 @@ package com.example.outsourcingproject.user.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -28,7 +30,18 @@ public class UserController {
 	@PatchMapping
 	public ResponseEntity<String> deleteAccount(HttpServletRequest request) {
 		userService.deleteAccount(request);
+		ResponseCookie cookie = ResponseCookie.from("token")
+			.httpOnly(true)
+			.secure(true)
+			.path("/")
+			.maxAge(0)
+			.sameSite("Strict")
+			.build();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
 		return ResponseEntity.ok()
+			.headers(headers)
 			.body("탈퇴 되었습니다.");
 	}
 

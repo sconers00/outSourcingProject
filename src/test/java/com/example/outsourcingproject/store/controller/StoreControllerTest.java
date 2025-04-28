@@ -71,7 +71,7 @@ class StoreControllerTest {
 				.content(new ObjectMapper().writeValueAsString(requestDto)))
 			.andExpect(status().isCreated())
 			.andExpect(content().json(
-				"{\"id\":1,\"storeName\":\"testStore\",\"address\":\"testAddr\",\"storeTelNumber\":\"123-4567-8900\",\"openTime\":\"12:34\",\"closeTime\":\"12:34\",\"minOrderPrice\":1234,\"menuList\":null}"))
+				"{\"id\":1,\"storeName\":\"testStore\",\"address\":\"testAddr\",\"storeTelNumber\":\"123-4567-8900\",\"openTime\":\"12:34\",\"closeTime\":\"12:34\",\"minOrderPrice\":1234}"))
 			.andDo(print());
 
 		ArgumentCaptor<StoreRequestDto> captor = ArgumentCaptor.forClass(StoreRequestDto.class);
@@ -105,7 +105,7 @@ class StoreControllerTest {
 				.content(new ObjectMapper().writeValueAsString(requestDto)))
 			.andExpect(status().isOk())
 			.andExpect(content().json(
-				"{\"id\":1,\"storeName\":\"changedStore\",\"address\":\"changedAddr\",\"storeTelNumber\":\"098-7654-3211\",\"openTime\":\"12:12\",\"closeTime\":\"12:12\",\"minOrderPrice\":2345,\"menuList\":null}"))
+				"{\"id\":1,\"storeName\":\"changedStore\",\"address\":\"changedAddr\",\"storeTelNumber\":\"098-7654-3211\",\"openTime\":\"12:12\",\"closeTime\":\"12:12\",\"minOrderPrice\":2345}"))
 			.andDo(print());
 
 		ArgumentCaptor<StoreRequestDto> captor = ArgumentCaptor.forClass(StoreRequestDto.class);
@@ -157,7 +157,7 @@ class StoreControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(content().json(
-				"[{\"id\":1,\"storeName\":\"changedStore\",\"address\":\"changedAddr\",\"storeTelNumber\":\"098-7654-3211\",\"openTime\":\"12:12\",\"closeTime\":\"12:12\",\"minOrderPrice\":2345,\"menuList\":null}]"))
+				"[{\"id\":1,\"storeName\":\"changedStore\",\"address\":\"changedAddr\",\"storeTelNumber\":\"098-7654-3211\",\"openTime\":\"12:12\",\"closeTime\":\"12:12\",\"minOrderPrice\":2345}]"))
 			.andDo(print());
 	}
 

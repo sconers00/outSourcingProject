@@ -21,6 +21,8 @@ import com.example.outsourcingproject.order.entity.Orders;
 import com.example.outsourcingproject.order.enums.OrderStatus;
 import com.example.outsourcingproject.order.service.OrderService;
 import com.example.outsourcingproject.store.entity.Store;
+import com.example.outsourcingproject.store.repository.StoreRepository;
+import com.example.outsourcingproject.store.service.StoreService;
 import com.example.outsourcingproject.user.dto.SearchOrderResponse;
 import com.example.outsourcingproject.user.entity.User;
 import com.example.outsourcingproject.user.repository.UserRepository;
@@ -44,14 +46,24 @@ class UserServiceTest {
 	HttpServletRequest httpServletRequest;
 	@Mock
 	private JwtUtil jwtUtil;
+	@Mock
+	StoreRepository storeRepository;
+	@Mock
+	StoreService storeService;
 	@InjectMocks
 	private UserService userService;
 
 	@Test
 	void deleteAccount() {
 		//given
+		Store store = Store.builder()
+			.storeName("testStore")
+			.build();
+		List<Store> storeList = new ArrayList<>();
+		storeList.add(store);
 		given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
 		given(userRepository.findById(anyLong())).willReturn(Optional.of(mockUser));
+		given(storeRepository.findAllByUser(any())).willReturn(Optional.of(storeList));
 		//when
 		userService.deleteAccount(httpServletRequest);
 		//then
