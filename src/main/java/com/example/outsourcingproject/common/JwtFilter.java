@@ -50,11 +50,6 @@ public class JwtFilter implements Filter {
 			return;
 		}
 
-		if (uri.startsWith("/")) {
-			filterChain.doFilter(httpServletRequest, httpServletResponse);
-			return;
-		}
-
 		String jwt = getTokenFromCookie(httpServletRequest);
 		if (jwt == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -85,7 +80,7 @@ public class JwtFilter implements Filter {
 		if (cookie == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		
+
 		return Arrays.stream(cookie)
 			.map(Cookie::getValue)
 			.findFirst()
