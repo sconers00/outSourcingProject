@@ -55,6 +55,7 @@ class OrderControllerTest {
 			.orderId(1L)
 			.build();
 		given(orderService.createOrder(any(), any())).willReturn(response);
+
 		//when & then
 		mockMvc.perform(post("/api/orders")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -67,6 +68,7 @@ class OrderControllerTest {
 
 	@Test
 	void cancelOrder() throws Exception {
+		//given
 		OrderRequestDto request = OrderRequestDto.builder()
 			.address("testAddr")
 			.menuId(1L)
@@ -84,6 +86,8 @@ class OrderControllerTest {
 			.build();
 		Cookie[] cookies = {new Cookie("token", "testToken")};
 		given(orderService.changeOrderState(any(), anyString(), anyLong())).willReturn(response);
+
+		//when & then
 		mockMvc.perform(patch("/api/orders/1")
 				.cookie(new Cookie("token", "testToken"))
 				.contentType(MediaType.APPLICATION_JSON)

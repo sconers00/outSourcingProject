@@ -52,8 +52,10 @@ class AuthServiceTest {
 			given(userRepository.save(any())).willReturn(user);
 			given(jwtUtil.createToken(any(), any(), any())).willReturn("bearer token");
 			given(jwtUtil.subStringToken(anyString())).willReturn("token");
+
 			//when
 			SignupResponse response = authService.signup(request);
+			
 			//then
 			assertEquals("token", response.getToken());
 		}
@@ -63,9 +65,11 @@ class AuthServiceTest {
 			//given
 			SignupRequest request = new SignupRequest();
 			given(userRepository.existsByEmail(any())).willReturn(true);
+
 			//when
 			ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class,
 				() -> authService.signup(request));
+
 			//then
 			assertEquals("400 BAD_REQUEST \"중복된 이메일입니다.\"", responseStatusException.getMessage());
 		}
@@ -83,8 +87,10 @@ class AuthServiceTest {
 			given(jwtUtil.createToken(any(), any(), any())).willReturn("bearerToken");
 			given(jwtUtil.subStringToken(any())).willReturn("token");
 			SigninRequest request = new SigninRequest();
+
 			//when
 			SigninResponse response = authService.login(request);
+
 			//then
 			assertEquals("token", response.getToken());
 		}
@@ -95,9 +101,11 @@ class AuthServiceTest {
 			User user = new User();
 			given(userRepository.findByEmail(any())).willReturn(Optional.empty());
 			SigninRequest request = new SigninRequest();
+
 			//when
 			ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class,
 				() -> authService.login(request));
+
 			//then
 			assertEquals("404 NOT_FOUND \"존재하지 않는 유저입니다.\"", responseStatusException.getMessage());
 		}
@@ -109,9 +117,11 @@ class AuthServiceTest {
 			user.deleteAccount(true);
 			given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
 			SigninRequest request = new SigninRequest();
+
 			//when
 			ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class,
 				() -> authService.login(request));
+
 			//then
 			assertEquals("400 BAD_REQUEST \"삭제된 유저입니다.\"", responseStatusException.getMessage());
 		}
@@ -123,9 +133,11 @@ class AuthServiceTest {
 			given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
 			given(passwordEncoder.matches(any(), any())).willReturn(false);
 			SigninRequest request = new SigninRequest();
+
 			//when
 			ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class,
 				() -> authService.login(request));
+
 			//then
 			assertEquals("401 UNAUTHORIZED \"잘못된 비밀번호입니다.\"", responseStatusException.getMessage());
 		}

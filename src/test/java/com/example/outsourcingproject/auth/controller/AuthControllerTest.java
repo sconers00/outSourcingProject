@@ -22,7 +22,6 @@ import com.example.outsourcingproject.auth.dto.SigninResponse;
 import com.example.outsourcingproject.auth.dto.SignupRequest;
 import com.example.outsourcingproject.auth.dto.SignupResponse;
 import com.example.outsourcingproject.auth.service.AuthService;
-import com.example.outsourcingproject.common.GlobalExceptionHandler;
 import com.example.outsourcingproject.common.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -43,8 +42,6 @@ class AuthControllerTest {
 	private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 	@MockitoBean
 	private HttpServletRequest httpServletRequest;
-	@MockitoBean
-	private GlobalExceptionHandler globalExceptionHandler;
 
 	@Test
 	void signup() throws Exception {
@@ -57,6 +54,7 @@ class AuthControllerTest {
 			.build();
 		SignupResponse signupResponse = SignupResponse.builder().token("someToken").build();
 		given(authService.signup(any(SignupRequest.class))).willReturn(signupResponse);
+		
 		//when & then
 		mockMvc.perform(post("/api/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -75,6 +73,7 @@ class AuthControllerTest {
 			.build();
 		SigninResponse signinResponse = SigninResponse.builder().token("someToken").build();
 		given(authService.login(any(SigninRequest.class))).willReturn(signinResponse);
+
 		//when & then
 		mockMvc.perform(post("/api/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -92,6 +91,7 @@ class AuthControllerTest {
 			//given
 			Cookie[] cookies = {new Cookie("token", "testToken")};
 			given(httpServletRequest.getCookies()).willReturn(cookies);
+
 			//when & then
 			mockMvc.perform(delete("/api/auth/logout")
 					.cookie(new Cookie("token", "testToken"))

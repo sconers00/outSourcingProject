@@ -59,6 +59,7 @@ class UserControllerTest {
 			.build();
 		list.add(searchOrderResponse);
 		given(userService.searchRequestedOrder(any(), anyInt())).willReturn(list);
+		
 		//when & then
 		mockMvc.perform(get("/api/users/me/orders")
 				.contentType(MediaType.APPLICATION_JSON)

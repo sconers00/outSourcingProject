@@ -240,6 +240,7 @@ class OrderServiceTest {
 
 		@Test
 		void findALLOrderByStore() {
+			//given
 			List<Orders> listToPage = new ArrayList<>();
 			Orders orders = Orders.builder()
 				.store(mockStore)
@@ -258,7 +259,10 @@ class OrderServiceTest {
 			given(mockStore.getUser()).willReturn(mockUser);
 			given(orderRepository.findAllByStoreOrElseThrow(any(), any())).willReturn(page);
 
+			//when
 			List<SearchOrderResponse> list = orderService.findOrderByStore(httpServletRequest, 1L, "ALL", 1);
+			
+			//then
 			assertEquals("testAddr", list.get(0).getAddress());
 			assertEquals(OrderStatus.PENDING.toString(), list.get(0).getOrderStatus());
 			assertEquals(1L, list.get(0).getQuantity());
@@ -266,6 +270,7 @@ class OrderServiceTest {
 
 		@Test
 		void findCertainOrderByStore() {
+			//given
 			List<Orders> listToPage = new ArrayList<>();
 			Orders orders = Orders.builder()
 				.store(mockStore)
@@ -284,7 +289,10 @@ class OrderServiceTest {
 			given(mockStore.getUser()).willReturn(mockUser);
 			given(orderRepository.findAllByOrderStatusAndStoreOrElseThrow(any(), any(), any())).willReturn(page);
 
+			//when
 			List<SearchOrderResponse> list = orderService.findOrderByStore(httpServletRequest, 1L, "PENDING", 1);
+
+			//then
 			assertEquals("testAddr", list.get(0).getAddress());
 			assertEquals(OrderStatus.PENDING.toString(), list.get(0).getOrderStatus());
 			assertEquals(1L, list.get(0).getQuantity());
@@ -292,20 +300,24 @@ class OrderServiceTest {
 
 		@Test
 		void userIsNotOwner() {
+			//given
 			given(jwtUtil.getIdFromRequest(any())).willReturn(1L);
 			given(userRepository.findById(anyLong())).willReturn(Optional.of(mockUser));
 			given(storeRepository.findById(anyLong())).willReturn(Optional.of(mockStore));
 			given(mockStore.getUser()).willReturn(new User());
 
+			//when
 			ResponseStatusException exception = assertThrows(ResponseStatusException.class,
 				() -> orderService.findOrderByStore(httpServletRequest, 1L, "PENDING", 1));
+
+			//then
 			assertEquals("401 UNAUTHORIZED \"해당 가게의 주인이 아닙니다.\"", exception.getMessage());
 		}
-
 	}
 
 	@Test
 	void findOrderByUser() {
+		//given
 		List<Orders> listToPage = new ArrayList<>();
 		Orders orders = Orders.builder()
 			.store(mockStore)
@@ -319,7 +331,11 @@ class OrderServiceTest {
 		PageImpl<Orders> page = new PageImpl<>(listToPage);
 
 		given(orderRepository.findAllByUserOrElseThrow(any(), any())).willReturn(page);
+
+		//when
 		List<Orders> list = orderService.findOrderByUser(mockUser, pageRequest);
+
+		//then
 		assertEquals("testAddr", list.get(0).getAddress());
 		assertEquals(OrderStatus.PENDING, list.get(0).getOrderStatus());
 		assertEquals(1L, list.get(0).getQuantity());
