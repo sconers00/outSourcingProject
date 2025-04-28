@@ -11,6 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.outsourcingproject.common.JwtUtil;
 import com.example.outsourcingproject.order.entity.Orders;
 import com.example.outsourcingproject.order.service.OrderService;
+import com.example.outsourcingproject.store.entity.Store;
+import com.example.outsourcingproject.store.repository.StoreRepository;
+import com.example.outsourcingproject.store.service.StoreService;
 import com.example.outsourcingproject.user.dto.SearchOrderResponse;
 import com.example.outsourcingproject.user.entity.User;
 import com.example.outsourcingproject.user.repository.UserRepository;
@@ -25,6 +28,8 @@ public class UserService {
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 	private final OrderService orderService;
+	private final StoreService storeService;
+	private final StoreRepository storeRepository;
 
 	// 유저 id를 HttpServletRequest에서 바로 추출할 수 있습니다.
 	// 위의 JwtUtil 의존성을 추가해주시고
@@ -35,6 +40,11 @@ public class UserService {
 	public void deleteAccount(HttpServletRequest request) {
 		long usersId = jwtUtil.getIdFromRequest(request);
 		User userFounded = userRepository.findById(usersId).orElseThrow();
+		List<Store> storeList = storeRepository.findAllByUser(userFounded)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "가게 없음"));
+		for (Store s : storeList) {
+			storeService.delete(s.getId(), request);
+		}
 		userFounded.deleteAccount(true);
 	}
 
