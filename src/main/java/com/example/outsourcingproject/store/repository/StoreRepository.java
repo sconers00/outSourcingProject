@@ -1,4 +1,29 @@
 package com.example.outsourcingproject.store.repository;
 
-public interface StoreRepository {
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.example.outsourcingproject.store.entity.Store;
+import com.example.outsourcingproject.user.entity.User;
+
+public interface StoreRepository extends JpaRepository<Store, Long> {
+
+	default Store findByIdOrElseThrow(Long id) {
+		return findById(id)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id));
+	}
+
+	List<Store> id(Long id);
+
+	Optional<Store> findByStoreName(String storeName);
+
+	Optional<Store> findByStoreTelNumber(String storeName);
+
+	Long countStoresByUser(User user);
+
+	Optional<List<Store>> findAllByUser(User userFounded);
 }
