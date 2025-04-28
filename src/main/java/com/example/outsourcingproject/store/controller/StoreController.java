@@ -18,6 +18,7 @@ import com.example.outsourcingproject.order.dto.ChangeOrderState;
 import com.example.outsourcingproject.order.dto.OrderResponse;
 import com.example.outsourcingproject.order.service.OrderService;
 import com.example.outsourcingproject.store.dto.requestDto.StoreRequestDto;
+import com.example.outsourcingproject.store.dto.responseDto.GetStoreResponseDto;
 import com.example.outsourcingproject.store.dto.responseDto.StoreResponseDto;
 import com.example.outsourcingproject.store.service.StoreService;
 import com.example.outsourcingproject.user.dto.SearchOrderResponse;
@@ -55,11 +56,11 @@ public class StoreController {
 	}
 
 	@GetMapping("/stores/{id}")
-	public ResponseEntity<StoreResponseDto> findById(@PathVariable Long id) {
+	public ResponseEntity<GetStoreResponseDto> findById(@PathVariable Long id) {
 
-		StoreResponseDto storeResponseDto = storeService.findById(id);
+		GetStoreResponseDto getStoreResponseDto = storeService.findById(id);
 
-		return new ResponseEntity<>(storeResponseDto, HttpStatus.OK);
+		return new ResponseEntity<>(getStoreResponseDto, HttpStatus.OK);
 	}
 
 	@GetMapping("/stores")
