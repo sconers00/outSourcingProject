@@ -1,12 +1,15 @@
 package com.example.outsourcingproject.store.dto.responseDto;
 
+import java.util.List;
+
+import com.example.outsourcingproject.menu.dto.MenuResponseDto;
 import com.example.outsourcingproject.store.entity.Store;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class StoreResponseDto {
+public class GetStoreResponseDto {
 
 	private final Long id;
 
@@ -22,9 +25,11 @@ public class StoreResponseDto {
 
 	private final Long minOrderPrice;
 
+	private final List<MenuResponseDto> menuList;
+
 	@Builder
-	public StoreResponseDto(Long id, String storeName, String address, String storeTelNumber, String openTime,
-		String closeTime, Long minOrderPrice) {
+	public GetStoreResponseDto(Long id, String storeName, String address, String storeTelNumber, String openTime,
+		String closeTime, Long minOrderPrice, List<MenuResponseDto> menuList) {
 		this.id = id;
 		this.storeName = storeName;
 		this.address = address;
@@ -32,10 +37,12 @@ public class StoreResponseDto {
 		this.openTime = openTime;
 		this.closeTime = closeTime;
 		this.minOrderPrice = minOrderPrice;
+		this.menuList = menuList;
 	}
 
-	public static StoreResponseDto from(Store store) {
-		return StoreResponseDto.builder()
+
+	public static GetStoreResponseDto fromMenu(Store store, List<MenuResponseDto> menuList) {
+		return GetStoreResponseDto.builder()
 			.id(store.getId())
 			.storeName(store.getStoreName())
 			.address(store.getAddress())
@@ -43,6 +50,8 @@ public class StoreResponseDto {
 			.openTime(store.getOpenTime())
 			.closeTime(store.getCloseTime())
 			.minOrderPrice(store.getMinOrderPrice())
+			.menuList(menuList)
 			.build();
 	}
+
 }
